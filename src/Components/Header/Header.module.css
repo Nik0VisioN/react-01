@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+
+.header {
+  grid-area: h;
+  background-color: rgb(197, 212, 218);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 10px;
+  font-family: 'Space Mono', monospace;
+}
+
+.header img {
+  width: 80px;
+}
+
+.text {
+  font-size: 30px;
+  color: rgb(107, 42, 42);
+}

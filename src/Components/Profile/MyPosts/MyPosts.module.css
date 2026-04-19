@@ -1,0 +1,9 @@
+
+.content {
+  grid-area: c;
+  background-color: bisque;
+}
+.nav_logo img {
+  margin: auto;
+  width: 30%;
+}
