@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import content_area from './Profile.module.css';
 import MyPosts from './MyPosts/MyPosts';
 
 const Profile = () => {
   return (
-    <div className={content_area.content}>
+    <div>
       
-      <MyPosts />
+      <MyPosts/>
     </div>
   
 )}

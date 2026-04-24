@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import logo_channel_main from './Together_logo.png';
 import header_space from './Header.module.css';
 

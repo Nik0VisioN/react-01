@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import content_area from './MyPosts.module.css';
 import Post from './Post/Post';
 
@@ -10,10 +10,8 @@ const MyPosts = () => {
       <button> Remove</button>
     </div>
     <div className={content_area.posts}>
-      <Post />
-      <Post />
-      <Post />
-      <Post />
+      <Post message="Hello, world!" likesCount='4' />
+      <Post message="This is my first post!" likesCount='66' />
     </div>
   </>
   )

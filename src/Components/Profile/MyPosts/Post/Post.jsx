@@ -1,17 +1,18 @@
-import React, { Component } from 'react';
+import React from 'react';
 import content_area from './Post.module.css';
 
-const Post = () => {
+const Post = (props) => {
+
   return (
 
     <div className={content_area.posts}>
       <img src='https://cdn-icons-png.flaticon.com/512/149/149071.png' alt='avatar' className={content_area.avatar} />
       <span>nickname</span>
       <div>
-      post 1
+      {props.message}
       </div>
       <div>
-      <button> like </button>
+      <span> like </span> {props.likesCount} 
       </div>
     </div>
   )

@@ -1,26 +1,21 @@
-import React, { Component } from 'react';
+import React from 'react';
 import navbar_space from './Navbar.module.css';
+import { NavLink } from 'react-router-dom';
 
 const Navbar = () => {
     return (
         <nav className={navbar_space.nav}>
             <div>
-                <a href="#profile" className={navbar_space.text_nav}>Profile</a>
+                <NavLink to="/profile" className={navbar_space.text_nav}>Profile</NavLink>
             </div>
             <div>
-                <a href="#chats" className={navbar_space.text_nav}>Chats</a>
+                <NavLink to="/chats" className={navbar_space.text_nav}>Chats</NavLink>
             </div>
             <div>
-                <a href="#contacts" className={navbar_space.text_nav}>Contacts</a>
-            </div>
+                <NavLink to="/music" className={navbar_space.text_nav}>Music</NavLink>
+            </div>  
             <div>
-                <a href="#music" className={navbar_space.text_nav}>Music</a>
-            </div>
-            <div>
-                <a href="#calls" className={navbar_space.text_nav}>Calls</a>
-            </div>
-            <div>
-                <a href="#saved_messages" className={navbar_space.text_nav}>Saved</a>
+                <NavLink to="/saved" className={navbar_space.text_nav}>Saved</NavLink>
             </div>
         </nav>
     )
