@@ -1,15 +1,17 @@
 import React from 'react';
-
 import content_area from './Profile.module.css';
 import MyPosts from './MyPosts/MyPosts';
+import ProfileInfo from './ProfileInfo/ProfileInfo';
 
 const Profile = () => {
   return (
     <div>
-      
-      <MyPosts/>
+
+      <ProfileInfo />
+      <MyPosts />
     </div>
-  
-)}
+
+  )
+}
 
 export default Profile;
