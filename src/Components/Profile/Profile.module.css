@@ -1,7 +1,10 @@
+.profile {
+  height: 100%;
+  overflow-y: auto;
+}
 
 .content {
   grid-area: c;
-  background-color: bisque;
 }
 .nav_logo img {
   margin: auto;

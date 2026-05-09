@@ -1,9 +1,88 @@
-
-.content {
-  grid-area: c;
-  background-color: bisque;
+.my_posts {
+  padding: 20px;
+  background: #f5f5f5;
+  min-height: 100vh;
 }
-.nav_logo img {
-  margin: auto;
-  width: 30%;
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+  background: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.editor textarea {
+  resize: none;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  height: 80px;
+}
+
+.editor textarea:focus {
+  border-color: #6b2a2a;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn_add {
+  padding: 8px 18px;
+  background: #6b2a2a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.btn_add:hover {
+  background: #8b3a3a;
+}
+
+.btn_remove {
+  padding: 8px 18px;
+  background: transparent;
+  color: #6b2a2a;
+  border: 1px solid #6b2a2a;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.btn_remove:hover {
+  background: #6b2a2a;
+  color: white;
+}
+
+.posts {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.post {
+  background: #fff;
+  padding: 14px 16px;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  font-size: 14px;
+  color: #222;
+}
+
+.post_likes {
+  margin-top: 8px;
+  color: #888;
+  font-size: 13px;
 }

@@ -9,8 +9,6 @@ import Saved from './Components/Saved/Saved';
 import { BrowserRouter, Routes,  Route } from 'react-router-dom';
 
 
-let ChatsComponent = (props) => <Chats />
-
 const App = (props) => {
   return (
     <BrowserRouter>
@@ -19,8 +17,9 @@ const App = (props) => {
         <Navbar />
         <div className='app-wrapper-content'>
           <Routes>
-            <Route path='/profile' element={<Profile />} />
-            <Route path='/chats/*' element={<ChatsComponent />} />
+            <Route path='/profile' element={<Profile state={props.state.profilePage} />} />
+            <Route path='/chats' element={<Chats state={props.state.chatsPage} />} />
+            <Route path='/chats/:id' element={<Chats state={props.state.chatsPage} />} />
             <Route path='/music' element={<Music />} />
             <Route path='/saved' element={<Saved />} />
           </Routes>

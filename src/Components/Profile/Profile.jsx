@@ -3,12 +3,11 @@ import content_area from './Profile.module.css';
 import MyPosts from './MyPosts/MyPosts';
 import ProfileInfo from './ProfileInfo/ProfileInfo';
 
-const Profile = () => {
+const Profile = (props) => {
   return (
-    <div>
-
+    <div className={content_area.profile}>
       <ProfileInfo />
-      <MyPosts />
+      <MyPosts posts={props.state.postsData} />
     </div>
 
   )

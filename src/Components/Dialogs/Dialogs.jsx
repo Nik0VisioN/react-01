@@ -1,16 +1,33 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import s from './Dialogs.module.css';
 import DialogItem from './DialogItem/DialogsItem';
 import Message from './Message/Message';
-import { dialogsData } from '../../index';
-import { messagesData } from '../../index';
+import { useParams, useNavigate } from 'react-router-dom'
+
+
+
 
 const Dialogs = (props) => {
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-    let dialogsElements = dialogsData.map( dialog => < DialogItem name={dialog.name} id={dialog.id} />);
-    let messagesElements = messagesData.map( message => < Message message={message.name} />);
-    
-return (
+  useEffect(() => {
+    if (id) navigate('/chats');
+  }, []);
+
+  let dialogsElements = props.state.dialogsData.map(dialog => < DialogItem
+    name={dialog.name}
+    id={dialog.id}
+    key={dialog.id}
+    photo={dialog.photo} />);
+
+  let messagesElements = id
+    ? props.state.messagesData
+      .filter(message => message.dialogId === +id)
+      .map(message => <Message message={message.name} key={message.id} />)
+    : <p className={s.select_dialog}>Выберите диалог</p>
+
+  return (
     <div className={s.dialogs}>
       <div className={s.dialogs_items}>
         {dialogsElements}

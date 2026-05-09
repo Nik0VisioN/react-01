@@ -5,15 +5,13 @@ import header_space from './Header.module.css';
 
 const Header = () => {
     return (
-        <>
-            <header className={header_space.header}>
-                <img src={logo_channel_main} alt="Logo_Channel_Main" />
-                <span className={header_space.text}>
-                    Together
-                </span>
-            </header>
-        </>
-    );
+    <header className={header_space.header}>
+      <div className={header_space.logo}>
+        <img src={logo_channel_main} alt="Logo" />
+        <span className={header_space.text}>Together</span>
+      </div>
+    </header>
+  );
 }
 
 export default Header;
