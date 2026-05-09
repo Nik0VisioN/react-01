@@ -3,12 +3,13 @@ import s from './ProfileInfo.module.css';
 
 
 const ProfileInfo = (props) => {
+  const { name, title, location, photo } = props.state.userInfo;
   return (
     <div className={s.profile_info}>
-      <div className={s.avatar}>{props.state.userInfo.photo}</div>
+      <div className={s.avatar}>{photo}</div>
       <div className={s.info}>
-        <h2>{props.state.userInfo.name}</h2>
-        <p>{props.state.userInfo.title} · {props.state.userInfo.location}</p>
+        <h2>{name}</h2>
+        <p>{title} · {location}</p>
       </div>
     </div>
   )
