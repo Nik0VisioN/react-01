@@ -1,15 +1,14 @@
 import React from 'react';
-import content_area from './ProfileInfo.module.css';
 import s from './ProfileInfo.module.css';
 
 
-const ProfileInfo = () => {
+const ProfileInfo = (props) => {
   return (
     <div className={s.profile_info}>
-      <div className={s.avatar}>NvN</div>
+      <div className={s.avatar}>{props.state.userInfo.photo}</div>
       <div className={s.info}>
-        <h2>NikoVisioN</h2>
-        <p>IT Professional · Ukraine</p>
+        <h2>{props.state.userInfo.name}</h2>
+        <p>{props.state.userInfo.title} · {props.state.userInfo.location}</p>
       </div>
     </div>
   )

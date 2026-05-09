@@ -1,6 +1,12 @@
 
 let state = {
     profilePage: {
+        userInfo: {
+            name: 'NikoVisioN',
+            title: 'IT Developer',
+            location: 'Ukraine',
+            photo: "NvN"
+        },
         postsData: [
             { id: 1, message: 'Hello, world!', likesCount: 15 },
             { id: 2, message: 'How are you?', likesCount: 20 },
