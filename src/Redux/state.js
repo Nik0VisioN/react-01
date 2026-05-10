@@ -1,3 +1,6 @@
+let rerenderEntireTree = () => {
+    console.log('State changed');
+}
 
 let state = {
     profilePage: {
@@ -18,11 +21,12 @@ let state = {
             { id: 8, message: 'BLABKA', likesCount: 75 },
             { id: 9, message: 'hahahahha', likesCount: 73 }
         ],
+        newPostText: 'Write something...'
     },
 
     chatsPage: {
         dialogsData: [
-            { id: 1, name: 'Dima', photo: 'https://cdn.media.amplience.net/i/canon/canon-ef-85mm-f1.4l-is-usm-sample-031-556x359_3eb73625262844beb42ea75e29c627c8?w=550&qlt=100' },
+            { id: 1, name: 'Dima', photo: null },
             { id: 2, name: 'Sasha', photo: null },
             { id: 3, name: 'Sviat', photo: null },
             { id: 4, name: 'Iarik', photo: null },
@@ -39,5 +43,27 @@ let state = {
         ]
     }
 }
+
+export const addPost = () => {
+    let NewPost ={
+        id: 5,
+        message: state.profilePage.newPostText,
+        likesCount: 0
+    };
+    state.profilePage.postsData.push(NewPost);
+    state.profilePage.newPostText = '';
+    rerenderEntireTree(state);
+};
+
+
+export const updateNewPostText = (newText) => {
+    state.profilePage.newPostText = newText;
+    rerenderEntireTree(state);
+};
+
+export const subscribe = (observer) => {
+    rerenderEntireTree = observer;
+}
+
 
 export default state;

@@ -10,15 +10,22 @@ let postsElements = props.posts.map(post => <Post message={post.message} likesCo
 let newPostElement = React.createRef();
 
 let addPost = () => {
+  props.addPost();
+}
+
+let onPostChange = () => {
   let text = newPostElement.current.value;
-  //props.addPost(text);
-  alert(text);
+  props.updateNewPostText(text);
 }
 
   return (
   <div className={content_area.my_posts}>
     <div className={content_area.editor}>
-      <textarea placeholder="Напиши что-нибудь..." ref={newPostElement}></textarea>
+      <textarea
+      onChange={ onPostChange} 
+      ref={newPostElement}
+      value={props.newPostText} /> 
+
       <div className={content_area.buttons}>
         <button onClick={addPost} className={content_area.btn_add}>Add post</button>
         <button className={content_area.btn_remove}>Remove</button>
