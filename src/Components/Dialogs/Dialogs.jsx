@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import s from './Dialogs.module.css';
 import DialogItem from './DialogItem/DialogsItem';
 import Message from './Message/Message';
@@ -11,9 +11,15 @@ const Dialogs = (props) => {
   const { id } = useParams();
   const navigate = useNavigate();
 
+
+  const isFirstRender = useRef(true);
   useEffect(() => {
-    if (id) navigate('/chats');
-  }, []);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      if (id) navigate('/chats');
+    }
+  }, [id, navigate]);
+
 
   let dialogsElements = props.state.dialogsData.map(dialog => < DialogItem
     name={dialog.name}
