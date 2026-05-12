@@ -1,5 +1,8 @@
 const ADD_POST = 'ADD_POST';
 const UPDATE_NEW_POST_TEXT = 'UPDATE_NEW_POST_TEXT';
+const UPDATE_NEW_MESSAGE_BODY = 'UPDATE_NEW_MESSAGE_BODY';
+const SEND_MESSAGE = 'SEND_MESSAGE';
+const CLEAR_NEW_POST = 'CLEAR_NEW_POST';
 
 let store = {
     _state: {
@@ -21,11 +24,11 @@ let store = {
                 { id: 8, message: 'BLABKA', likesCount: 75 },
                 { id: 9, message: 'hahahahha', likesCount: 73 }
             ],
-            newPostText: 'Write something...'
+            newPostText: ''
         },
 
         chatsPage: {
-            dialogsData: [
+            chatsData: [
                 { id: 1, name: 'Dima', photo: null },
                 { id: 2, name: 'Sasha', photo: null },
                 { id: 3, name: 'Sviat', photo: null },
@@ -40,9 +43,14 @@ let store = {
                 { id: 4, dialogId: 4, name: 'Hi' },
                 { id: 5, dialogId: 5, name: 'Yo' },
                 { id: 6, dialogId: 6, name: 'Hi' }
-            ]
+            ],
+            newMessageBody: '',
         }
     },
+
+        
+
+
 
     _callSubscriber() {
         console.log('State changed')
@@ -73,16 +81,37 @@ let store = {
             this._state.profilePage.newPostText = action.newText;
             this._callSubscriber(this._state);
         }
+        else if (action.type === UPDATE_NEW_MESSAGE_BODY) {
+            this._state.chatsPage.newMessageBody = action.body;
+            this._callSubscriber(this._state);
+        }
+        else if (action.type === SEND_MESSAGE) {
+            let body = this._state.chatsPage.newMessageBody;
+            this._state.chatsPage.newMessageBody = '';
+            this._state.chatsPage.messagesData.push({dialogId: action.dialogId, name: body });
+            this._callSubscriber(this._state);
+        }
+            else if (action.type === CLEAR_NEW_POST) {
+                this._state.profilePage.newPostText = '';
+                this._callSubscriber(this._state);
+            }
     }
 }
 
 export const addPostActionCreator = () => ({type: ADD_POST});
-
-
 export const updateNewPostTextActionCreator = (newText) => ({
     type: UPDATE_NEW_POST_TEXT,
     newText: newText
 });
+export const removePostActionCreator = () => ({type: CLEAR_NEW_POST});
+
+
+export const sendMessageCreator = (dialogId) => ({type: SEND_MESSAGE, dialogId: dialogId});
+export const updateNewMessageBodyCreator = (body) => ({
+    type: UPDATE_NEW_MESSAGE_BODY,
+    body: body
+});
+
 
 window.state = store;
 export default store;

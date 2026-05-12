@@ -3,6 +3,7 @@ import s from './Dialogs.module.css';
 import DialogItem from './DialogItem/DialogsItem';
 import Message from './Message/Message';
 import { useParams, useNavigate } from 'react-router-dom'
+import { sendMessageCreator, updateNewMessageBodyCreator } from '../../Redux/state';
 
 
 
@@ -10,9 +11,8 @@ import { useParams, useNavigate } from 'react-router-dom'
 const Dialogs = (props) => {
   const { id } = useParams();
   const navigate = useNavigate();
-
-
   const isFirstRender = useRef(true);
+
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -20,30 +20,55 @@ const Dialogs = (props) => {
     }
   }, [id, navigate]);
 
+  let state = props.store.getState().chatsPage;
 
-  let dialogsElements = props.state.dialogsData.map(dialog => < DialogItem
+  let dialogsElements = state.chatsData.map(dialog => < DialogItem
     name={dialog.name}
     id={dialog.id}
     key={dialog.id}
     photo={dialog.photo} />);
 
   let messagesElements = id
-    ? props.state.messagesData
+    ? state.messagesData
       .filter(message => message.dialogId === +id)
       .map(message => <Message message={message.name} key={message.id} />)
-    : <p className={s.select_dialog}>Выберите диалог</p>
+    : <p className={s.select_dialog}>Choose a dialog</p>
 
-  return (
-    <div className={s.dialogs}>
-      <div className={s.dialogs_items}>
-        {dialogsElements}
-      </div>
+  let newMessageBody = state.newMessageBody;
 
-      <div className={s.messages}>
-        {messagesElements}
-      </div>
+
+  let OnSendMessageClick = () => {
+    props.store.dispatch(sendMessageCreator(+id));
+  }
+
+  let onNewMessageChange = (e) => {
+    let body = e.target.value;
+    props.store.dispatch(updateNewMessageBodyCreator(body));
+  }
+
+
+return (
+  <div className={s.dialogs}>
+    <div className={s.dialogs_items}>
+      {dialogsElements}
     </div>
-  )
+
+    <div className={s.messages}>
+      <div>{messagesElements}</div>
+
+      {id && (
+        <div className={s.message_editor}>
+          <textarea
+            value={newMessageBody}
+            onChange={onNewMessageChange}
+            placeholder='Enter your message'
+          />
+          <button onClick={OnSendMessageClick}>Send</button>
+        </div>
+      )}
+    </div>
+  </div>
+)
 }
 
 export default Dialogs;

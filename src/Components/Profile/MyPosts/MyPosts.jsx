@@ -2,6 +2,7 @@ import React from 'react';
 import content_area from './MyPosts.module.css';
 import Post from './Post/Post';
 import { addPostActionCreator, updateNewPostTextActionCreator } from '../../../Redux/state';
+import { removePostActionCreator } from '../../../Redux/state';
 
 
 const MyPosts = (props) => {
@@ -13,6 +14,11 @@ const MyPosts = (props) => {
   let addPost = () => {
     props.dispatch(addPostActionCreator());
   }
+
+  let removePost = () => {
+    props.dispatch(removePostActionCreator());
+  }
+
 
   let onPostChange = () => {
     let text = newPostElement.current.value;
@@ -26,11 +32,12 @@ const MyPosts = (props) => {
         <textarea
           onChange={onPostChange}
           ref={newPostElement}
-          value={props.newPostText} />
+          value={props.newPostText}
+          placeholder='Write your text ' />
 
         <div className={content_area.buttons}>
           <button onClick={addPost} className={content_area.btn_add}>Add post</button>
-          <button className={content_area.btn_remove}>Remove</button>
+          <button onClick={removePost} className={content_area.btn_remove}>Remove</button>
         </div>
       </div>
       <div className={content_area.posts}>

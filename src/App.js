@@ -21,9 +21,9 @@ const App = (props) => {
             dispatch={props.dispatch}
           />} />
 
-          <Route path='/chats' element={<Chats state={props.state.chatsPage} />} />
+          <Route path='/chats' element={<Chats store={props.store} />} />
 
-          <Route path='/chats/:id' element={<Chats state={props.state.chatsPage} />} />
+          <Route path='/chats/:id' element={<Chats store={props.store} />} />
 
           <Route path='/music' element={<Music />} />
 
