@@ -1,8 +1,8 @@
-const ADD_POST = 'ADD_POST';
-const UPDATE_NEW_POST_TEXT = 'UPDATE_NEW_POST_TEXT';
-const UPDATE_NEW_MESSAGE_BODY = 'UPDATE_NEW_MESSAGE_BODY';
-const SEND_MESSAGE = 'SEND_MESSAGE';
-const CLEAR_NEW_POST = 'CLEAR_NEW_POST';
+import profileReducer from './profile_reducer';
+import chatsReducer from './chats_reducer'
+import sidebarReducer from './sidebar_reducer'
+
+
 
 let store = {
     _state: {
@@ -45,7 +45,10 @@ let store = {
                 { id: 6, dialogId: 6, name: 'Hi' }
             ],
             newMessageBody: '',
-        }
+        },
+
+        sidebar: {}
+
     },
 
         
@@ -67,50 +70,14 @@ let store = {
 
 
     dispatch(action) {
-        if (action.type === ADD_POST) {
-            let NewPost = {
-                id: 5,
-                message: this._state.profilePage.newPostText,
-                likesCount: 0
-            };
-            this._state.profilePage.postsData.push(NewPost);
-            this._state.profilePage.newPostText = '';
-            this._callSubscriber(this._state);
-        }
-        else if (action.type === UPDATE_NEW_POST_TEXT) {
-            this._state.profilePage.newPostText = action.newText;
-            this._callSubscriber(this._state);
-        }
-        else if (action.type === UPDATE_NEW_MESSAGE_BODY) {
-            this._state.chatsPage.newMessageBody = action.body;
-            this._callSubscriber(this._state);
-        }
-        else if (action.type === SEND_MESSAGE) {
-            let body = this._state.chatsPage.newMessageBody;
-            this._state.chatsPage.newMessageBody = '';
-            this._state.chatsPage.messagesData.push({dialogId: action.dialogId, name: body });
-            this._callSubscriber(this._state);
-        }
-            else if (action.type === CLEAR_NEW_POST) {
-                this._state.profilePage.newPostText = '';
-                this._callSubscriber(this._state);
-            }
+
+        this._state.profilePage = profileReducer(this._state.profilePage, action );
+        this._state.chatsPage = chatsReducer(this._state.chatsPage, action );
+        this._state.sidebar = sidebarReducer(this._state.sidebar, action );
+        this._callSubscriber(this._state);
+
     }
 }
-
-export const addPostActionCreator = () => ({type: ADD_POST});
-export const updateNewPostTextActionCreator = (newText) => ({
-    type: UPDATE_NEW_POST_TEXT,
-    newText: newText
-});
-export const removePostActionCreator = () => ({type: CLEAR_NEW_POST});
-
-
-export const sendMessageCreator = (dialogId) => ({type: SEND_MESSAGE, dialogId: dialogId});
-export const updateNewMessageBodyCreator = (body) => ({
-    type: UPDATE_NEW_MESSAGE_BODY,
-    body: body
-});
 
 
 window.state = store;

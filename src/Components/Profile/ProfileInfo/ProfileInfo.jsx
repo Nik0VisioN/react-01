@@ -3,7 +3,8 @@ import s from './ProfileInfo.module.css';
 
 
 const ProfileInfo = (props) => {
-  const { name, title, location, photo } = props.state.userInfo;
+  let state = props.store.getState();
+  const { name, title, location, photo } = state.profilePage.userInfo;
   return (
     <div className={s.profile_info}>
       <div className={s.avatar}>{photo}</div>

@@ -1,29 +1,27 @@
 import React from 'react';
 import content_area from './MyPosts.module.css';
 import Post from './Post/Post';
-import { addPostActionCreator, updateNewPostTextActionCreator } from '../../../Redux/state';
-import { removePostActionCreator } from '../../../Redux/state';
+//import { addPostActionCreator, updateNewPostTextActionCreator, removePostActionCreator } from '../../../Redux/profile_reducer';
 
 
 const MyPosts = (props) => {
 
-  let postsElements = props.posts.map(post => <Post message={post.message} likesCount={post.likesCount} />);
+  let postsElements = props.posts.map(post => <Post key={post.id} message={post.message} likesCount={post.likesCount} />);
 
   let newPostElement = React.createRef();
 
-  let addPost = () => {
-    props.dispatch(addPostActionCreator());
+  let onAddPost = () => {
+    props.addPost();
   }
 
-  let removePost = () => {
-    props.dispatch(removePostActionCreator());
+  let removeNewPost = () => {
+    props.removePost();
   }
 
 
   let onPostChange = () => {
     let text = newPostElement.current.value;
-    let action = updateNewPostTextActionCreator(text);
-    props.dispatch(action);
+    props.updateNewPostText(text)
   }
 
   return (
@@ -36,8 +34,8 @@ const MyPosts = (props) => {
           placeholder='Write your text ' />
 
         <div className={content_area.buttons}>
-          <button onClick={addPost} className={content_area.btn_add}>Add post</button>
-          <button onClick={removePost} className={content_area.btn_remove}>Remove</button>
+          <button onClick={onAddPost} className={content_area.btn_add}>Add post</button>
+          <button onClick={removeNewPost} className={content_area.btn_remove}>Remove</button>
         </div>
       </div>
       <div className={content_area.posts}>

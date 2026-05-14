@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@reduxjs/toolkit": "^2.11.2",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -12,6 +13,7 @@
     "react-router-app": "^0.1.6",
     "react-router-dom": "^7.14.2",
     "react-scripts": "5.0.1",
+    "redux": "^5.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

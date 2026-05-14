@@ -2,10 +2,10 @@ import './App.css';
 import Header from './Components/Header/Header';
 import Navbar from './Components/Navbar/Navbar';
 import Profile from './Components/Profile/Profile';
-import Chats from './Components/Dialogs/Dialogs';
 import Music from './Components/Music/Music';
 import Saved from './Components/Saved/Saved';
 import { Routes, Route } from 'react-router-dom';
+import Chats_Container from './Components/Chats/Chats_Container';
 
 
 const App = (props) => {
@@ -17,13 +17,12 @@ const App = (props) => {
       <div className='app-wrapper-content'>
         <Routes>
           <Route path='/profile' element={<Profile
-            profilePage={props.state.profilePage}
-            dispatch={props.dispatch}
+            store={props.store}
           />} />
 
-          <Route path='/chats' element={<Chats store={props.store} />} />
+          <Route path='/chats' element={<Chats_Container store={props.store} />} />
 
-          <Route path='/chats/:id' element={<Chats store={props.store} />} />
+          <Route path='/chats/:id' element={<Chats_Container store={props.store} />} />
 
           <Route path='/music' element={<Music />} />
 

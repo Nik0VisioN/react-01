@@ -1,14 +1,13 @@
 import React, { useEffect, useRef } from 'react';
-import s from './Dialogs.module.css';
+import s from './Chats.module.css';
 import DialogItem from './DialogItem/DialogsItem';
 import Message from './Message/Message';
 import { useParams, useNavigate } from 'react-router-dom'
-import { sendMessageCreator, updateNewMessageBodyCreator } from '../../Redux/state';
 
 
 
 
-const Dialogs = (props) => {
+const Chats = (props) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const isFirstRender = useRef(true);
@@ -20,7 +19,7 @@ const Dialogs = (props) => {
     }
   }, [id, navigate]);
 
-  let state = props.store.getState().chatsPage;
+  let state = props.chatsPage;
 
   let dialogsElements = state.chatsData.map(dialog => < DialogItem
     name={dialog.name}
@@ -38,12 +37,12 @@ const Dialogs = (props) => {
 
 
   let OnSendMessageClick = () => {
-    props.store.dispatch(sendMessageCreator(+id));
+    props.sendMessage(+id);
   }
 
   let onNewMessageChange = (e) => {
     let body = e.target.value;
-    props.store.dispatch(updateNewMessageBodyCreator(body));
+    props.updateNewMessageBody(body);
   }
 
 
@@ -71,4 +70,4 @@ return (
 )
 }
 
-export default Dialogs;
+export default Chats;
