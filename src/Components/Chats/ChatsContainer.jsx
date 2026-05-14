@@ -4,7 +4,7 @@ import Chats from './Chats'
 
 
 
-const Chats_Container = (props) => {
+const ChatsContainer = (props) => {
  
 
   let state = props.store.getState().chatsPage;
@@ -27,4 +27,4 @@ return (
 )
 }
 
-export default Chats_Container;
+export default ChatsContainer;

@@ -5,7 +5,7 @@ import Profile from './Components/Profile/Profile';
 import Music from './Components/Music/Music';
 import Saved from './Components/Saved/Saved';
 import { Routes, Route } from 'react-router-dom';
-import Chats_Container from './Components/Chats/Chats_Container';
+import ChatsContainer from './Components/Chats/ChatsContainer';
 
 
 const App = (props) => {
@@ -20,9 +20,9 @@ const App = (props) => {
             store={props.store}
           />} />
 
-          <Route path='/chats' element={<Chats_Container store={props.store} />} />
+          <Route path='/chats' element={<ChatsContainer store={props.store} />} />
 
-          <Route path='/chats/:id' element={<Chats_Container store={props.store} />} />
+          <Route path='/chats/:id' element={<ChatsContainer store={props.store} />} />
 
           <Route path='/music' element={<Music />} />
 
