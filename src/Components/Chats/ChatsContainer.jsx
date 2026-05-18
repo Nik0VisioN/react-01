@@ -1,30 +1,55 @@
+import { connect } from 'react-redux';
 import { sendMessageCreator, updateNewMessageBodyCreator } from '../../Redux/chats_reducer';
-import Chats from './Chats'
+import Chats from './Chats';
 
 
+// const ChatsContainer = () => {
 
 
-const ChatsContainer = (props) => {
- 
+//   return <StoreContext.Consumer>
+//     {store => {
 
-  let state = props.store.getState().chatsPage;
+//       let state = store.getState().chatsPage;
 
-  let OnSendMessageClick = (dialogId) => {
-    props.store.dispatch(sendMessageCreator(dialogId));
-  }
+//       let OnSendMessageClick = (dialogId) => {
+//         store.dispatch(sendMessageCreator(dialogId));
+//       }
 
-  let onNewMessageChange = (body) => {
-    props.store.dispatch(updateNewMessageBodyCreator(body));
-  }
+//       let onNewMessageChange = (body) => {
+//         store.dispatch(updateNewMessageBodyCreator(body));
+//       }
 
 
-return (
-  <Chats 
-  updateNewMessageBody = {onNewMessageChange} 
-  sendMessage = {OnSendMessageClick}
-  chatsPage = {state}
-  />
-)
+//       return <Chats
+//         updateNewMessageBody={onNewMessageChange}
+//         sendMessage={OnSendMessageClick}
+//         chatsPage={state}
+//       />
+//     }
+//     }
+//   </StoreContext.Consumer>
+// }
+
+
+const mapStateToProps = (state) => {
+return {
+chatsPage: state.chatsPage
 }
+}
+
+const mapDispatchToProps = (dispatch) => {
+return {
+updateNewMessageBody: (body) => {
+  dispatch(updateNewMessageBodyCreator(body));
+},
+sendMessage: (dialogId) => {
+  dispatch(sendMessageCreator(dialogId));
+
+},
+}
+}
+
+
+const ChatsContainer = connect(mapStateToProps, mapDispatchToProps)(Chats);
 
 export default ChatsContainer;

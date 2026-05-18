@@ -51,7 +51,7 @@ let store = {
 
     },
 
-        
+
 
 
 
@@ -71,9 +71,9 @@ let store = {
 
     dispatch(action) {
 
-        this._state.profilePage = profileReducer(this._state.profilePage, action );
-        this._state.chatsPage = chatsReducer(this._state.chatsPage, action );
-        this._state.sidebar = sidebarReducer(this._state.sidebar, action );
+        this._state.profilePage = profileReducer(this._state.profilePage, action);
+        this._state.chatsPage = chatsReducer(this._state.chatsPage, action);
+        this._state.sidebar = sidebarReducer(this._state.sidebar, action);
         this._callSubscriber(this._state);
 
     }

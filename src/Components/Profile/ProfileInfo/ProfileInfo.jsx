@@ -1,10 +1,9 @@
 import React from 'react';
 import s from './ProfileInfo.module.css';
-
+import { connect } from 'react-redux';
 
 const ProfileInfo = (props) => {
-  let state = props.store.getState();
-  const { name, title, location, photo } = state.profilePage.userInfo;
+  const { name, title, location, photo } = props.userInfo;
   return (
     <div className={s.profile_info}>
       <div className={s.avatar}>{photo}</div>
@@ -16,4 +15,8 @@ const ProfileInfo = (props) => {
   )
 }
 
-export default ProfileInfo;
+const mapStateToProps = (state) => ({
+  userInfo: state.profilePage.userInfo
+});
+
+export default connect(mapStateToProps)(ProfileInfo);
