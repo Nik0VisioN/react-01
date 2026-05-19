@@ -5,10 +5,10 @@ const Post = (props) => {
   return (
     <div className={content_area.post}>
       <div className={content_area.header}>
-        <img 
-          src='https://cdn-icons-png.flaticon.com/512/149/149071.png' 
-          alt='avatar' 
-          className={content_area.avatar} 
+        <img
+          src='https://cdn-icons-png.flaticon.com/512/149/149071.png'
+          alt='avatar'
+          className={content_area.avatar}
         />
         <span className={content_area.nickname}>nickname</span>
       </div>

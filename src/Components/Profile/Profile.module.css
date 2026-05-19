@@ -1,11 +1,13 @@
 .profile {
   height: 100%;
   overflow-y: auto;
+  background: var(--bg);
 }
 
 .content {
   grid-area: c;
 }
+
 .nav_logo img {
   margin: auto;
   width: 30%;

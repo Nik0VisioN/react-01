@@ -6,9 +6,9 @@ const Music = (props) => {
   return (
 
     <div className={s.content}>
-        Music
+      Music
     </div>
-      
+
   )
 }
 

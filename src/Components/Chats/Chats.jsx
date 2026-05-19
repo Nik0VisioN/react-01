@@ -46,28 +46,28 @@ const Chats = (props) => {
   }
 
 
-return (
-  <div className={s.dialogs}>
-    <div className={s.dialogs_items}>
-      {dialogsElements}
-    </div>
+  return (
+    <div className={s.dialogs}>
+      <div className={s.dialogs_items}>
+        {dialogsElements}
+      </div>
 
-    <div className={s.messages}>
-      <div>{messagesElements}</div>
+      <div className={s.messages}>
+        <div>{messagesElements}</div>
 
-      {id && (
-        <div className={s.message_editor}>
-          <textarea
-            value={newMessageBody}
-            onChange={onNewMessageChange}
-            placeholder='Enter your message'
-          />
-          <button onClick={OnSendMessageClick}>Send</button>
-        </div>
-      )}
+        {id && (
+          <div className={s.message_editor}>
+            <textarea
+              value={newMessageBody}
+              onChange={onNewMessageChange}
+              placeholder='Enter your message'
+            />
+            <button onClick={OnSendMessageClick}>Send</button>
+          </div>
+        )}
+      </div>
     </div>
-  </div>
-)
+  )
 }
 
 export default Chats;

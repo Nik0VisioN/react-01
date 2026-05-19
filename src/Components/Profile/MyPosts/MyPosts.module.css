@@ -1,6 +1,6 @@
 .my_posts {
-  padding: 20px;
-  background: #f5f5f5;
+  padding: clamp(12px, 2vw, 20px);
+  background: var(--bg-secondary);
   min-height: 100vh;
 }
 
@@ -9,35 +9,38 @@
   flex-direction: column;
   gap: 10px;
   margin-bottom: 20px;
-  background: #fff;
-  padding: 16px;
+  background: var(--bg-card);
+  padding: clamp(12px, 2vw, 16px);
   border-radius: 12px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow);
 }
 
 .editor textarea {
   resize: none;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 10px;
   font-size: 14px;
   font-family: inherit;
   outline: none;
   height: 80px;
+  background: var(--bg);
+  color: var(--text);
 }
 
 .editor textarea:focus {
-  border-color: #6b2a2a;
+  border-color: var(--accent);
 }
 
 .buttons {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .btn_add {
   padding: 8px 18px;
-  background: #6b2a2a;
+  background: var(--accent);
   color: white;
   border: none;
   border-radius: 8px;
@@ -47,14 +50,14 @@
 }
 
 .btn_add:hover {
-  background: #8b3a3a;
+  background: var(--accent-hover);
 }
 
 .btn_remove {
   padding: 8px 18px;
   background: transparent;
-  color: #6b2a2a;
-  border: 1px solid #6b2a2a;
+  color: var(--accent);
+  border: 1px solid var(--accent);
   border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
@@ -62,7 +65,7 @@
 }
 
 .btn_remove:hover {
-  background: #6b2a2a;
+  background: var(--accent);
   color: white;
 }
 
@@ -73,16 +76,16 @@
 }
 
 .post {
-  background: #fff;
+  background: var(--bg-card);
   padding: 14px 16px;
   border-radius: 12px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow);
   font-size: 14px;
-  color: #222;
+  color: var(--text);
 }
 
 .post_likes {
   margin-top: 8px;
-  color: #888;
+  color: var(--text-muted);
   font-size: 13px;
 }

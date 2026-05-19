@@ -1,6 +1,6 @@
 .dialogs {
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: clamp(180px, 25vw, 280px) 1fr;
     height: 100%;
     overflow: hidden;
 }
@@ -8,13 +8,13 @@
 .dialogs_items {
     display: flex;
     flex-direction: column;
-    border-right: 1px solid #e0e0e0;
+    border-right: 1px solid var(--border);
     overflow-y: auto;
-    background: #fff;
+    background: var(--bg-card);
 }
 
 .dialog:hover {
-    background-color: rgba(107, 42, 42, 0.1);
+    background-color: var(--accent-bg);
 }
 
 .dialog a {
@@ -23,13 +23,13 @@
     gap: 12px;
     padding: 6px 16px;
     text-decoration: none;
-    color: #6b2a2a;
+    color: var(--accent);
     font-weight: 600;
     font-size: 15px;
 }
 
 .dialog a.active {
-    color: rgb(32, 137, 185);
+    color: var(--accent-hover);
 }
 
 .messages {
@@ -39,22 +39,35 @@
     gap: 8px;
     overflow-y: auto;
     height: 100%;
-    background: #f5f5f5;
+    background: var(--bg-secondary);
 }
 
 .message {
     display: inline-block;
     max-width: 60%;
     padding: 10px 14px;
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 18px 18px 18px 4px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow);
     font-size: 14px;
-    color: #222;
+    color: var(--text);
 }
 
 .select_dialog {
     margin: auto;
-    color: #aaa;
+    color: var(--text-muted);
     font-size: 15px;
+}
+
+@media (max-width: 600px) {
+    .dialogs {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+    }
+
+    .dialogs_items {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        max-height: 40vh;
+    }
 }

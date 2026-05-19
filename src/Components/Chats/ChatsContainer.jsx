@@ -32,21 +32,21 @@ import Chats from './Chats';
 
 
 const mapStateToProps = (state) => {
-return {
-chatsPage: state.chatsPage
-}
+  return {
+    chatsPage: state.chatsPage
+  }
 }
 
 const mapDispatchToProps = (dispatch) => {
-return {
-updateNewMessageBody: (body) => {
-  dispatch(updateNewMessageBodyCreator(body));
-},
-sendMessage: (dialogId) => {
-  dispatch(sendMessageCreator(dialogId));
+  return {
+    updateNewMessageBody: (body) => {
+      dispatch(updateNewMessageBodyCreator(body));
+    },
+    sendMessage: (dialogId) => {
+      dispatch(sendMessageCreator(dialogId));
 
-},
-}
+    },
+  }
 }
 
 

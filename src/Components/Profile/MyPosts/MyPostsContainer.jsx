@@ -13,4 +13,6 @@ const mapDispatchToProps = (dispatch) => ({
   updateNewPostText: (text) => dispatch(updateNewPostTextActionCreator(text)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(MyPosts);
+const MyPostsContainer = connect(mapStateToProps, mapDispatchToProps)(MyPosts);
+
+export default MyPostsContainer;

@@ -6,6 +6,7 @@ import Music from './Components/Music/Music';
 import Saved from './Components/Saved/Saved';
 import { Routes, Route } from 'react-router-dom';
 import ChatsContainer from './Components/Chats/ChatsContainer';
+import UsersContainer from './Components/Users/UsersContainer';
 
 
 const App = (props) => {
@@ -23,6 +24,8 @@ const App = (props) => {
           <Route path='/chats' element={<ChatsContainer store={props.store} />} />
 
           <Route path='/chats/:id' element={<ChatsContainer store={props.store} />} />
+
+          <Route path='/users' element={<UsersContainer />} />
 
           <Route path='/music' element={<Music />} />
 

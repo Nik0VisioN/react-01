@@ -2,13 +2,14 @@
 
 .header {
   grid-area: h;
-  background: #dce8ed;
+  background: var(--bg-nav);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 30px;
+  padding: 0 clamp(12px, 3vw, 30px);
   font-family: 'Space Mono', monospace;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow);
+  border-bottom: 1px solid var(--border);
   z-index: 100;
 }
 
@@ -19,15 +20,23 @@
 }
 
 .header img {
-  width: 48px;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+  width: clamp(32px, 5vw, 48px);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
   user-select: none;
 }
 
 .text {
-  font-size: 20px;
-  color: rgb(107, 42, 42);
+  font-size: clamp(14px, 2vw, 20px);
+  color: var(--accent);
   letter-spacing: 3px;
   font-weight: 700;
   user-select: none;
+}
+
+:global(html.dark) .header img {
+  filter: drop-shadow(0 0 8px rgba(132, 212, 26, 0.4)) drop-shadow(0 0 16px rgba(224, 194, 22, 0.3));
+}
+
+:global(html.dark) .text {
+  text-shadow: 0 0 16px rgba(132, 212, 26, 0.4);
 }

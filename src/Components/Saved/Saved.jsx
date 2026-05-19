@@ -6,9 +6,9 @@ const Saved = (props) => {
   return (
 
     <div className={s.content}>
-        Saved
+      Saved
     </div>
-      
+
   )
 }
 

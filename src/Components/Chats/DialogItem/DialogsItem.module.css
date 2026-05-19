@@ -4,38 +4,39 @@
   gap: 10px;
   padding: 10px 16px;
   text-decoration: none;
-  color: #222;
+  color: var(--text);
   font-size: 15px;
   transition: background 0.15s;
 }
 
 .dialog a:hover {
-  background: #f0f0f0;
+  background: var(--accent-bg);
 }
 
 .dialog a.active {
-  background: #e8f4fd;
-  color: #1a8fc1;
+  background: var(--accent-bg);
+  color: var(--accent-hover);
 }
 
 .avatar {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #6b2a2a, #c0392b);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 16px;
-    flex-shrink: 0;
-    overflow: hidden;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6b2a2a, #c0392b);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  flex-shrink: 0;
+  overflow: hidden;
+  user-select: none;
 }
 
 .avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
