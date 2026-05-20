@@ -15,8 +15,10 @@ const Post = (props) => {
       <div className={content_area.message}>
         {props.message}
       </div>
-      <div className={content_area.likes}>
-        <span className={content_area.heart}>♥</span>
+      <div className={content_area.likes} onClick={() => props.toggleLike(props.id)} style={{ cursor: 'pointer' }}>
+        <span className={content_area.heart} style={{ color: props.liked ? '#e74c3c' : '#888' }}>
+          {props.liked ? '♥' : '♡'}
+        </span>
         {props.likesCount}
       </div>
     </div>

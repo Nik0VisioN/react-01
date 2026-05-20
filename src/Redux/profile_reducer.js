@@ -1,13 +1,16 @@
+import userPhoto from '../Logo_Channel.png';
+
 const ADD_POST = 'ADD_POST';
 const UPDATE_NEW_POST_TEXT = 'UPDATE_NEW_POST_TEXT';
 const CLEAR_NEW_POST = 'CLEAR_NEW_POST';
+const TOGGLE_LIKE = 'TOGGLE_LIKE';
 
 let initialState = {
     userInfo: {
         name: 'NikoVisioN',
         title: 'IT Developer',
         location: 'Ukraine',
-        photo: "NvN"
+        photo: userPhoto,
     },
     postsData: [
         { id: 1, message: 'Hello, world!', likesCount: 15 },
@@ -49,6 +52,15 @@ const profileReducer = (state = initialState, action) => {
                 newPostText: ''
             };
 
+        case TOGGLE_LIKE:
+            return {
+                ...state,
+                postsData: state.postsData.map(post =>
+                    post.id === action.postId
+                        ? { ...post, liked: !post.liked, likesCount: post.liked ? post.likesCount - 1 : post.likesCount + 1 }
+                        : post
+                )
+            };
         default:
             return state;
     }
@@ -61,7 +73,7 @@ export const updateNewPostTextActionCreator = (newText) => ({
     newText: newText
 });
 export const removePostActionCreator = () => ({ type: CLEAR_NEW_POST });
-
+export const toggleLikeActionCreator = (postId) => ({ type: TOGGLE_LIKE, postId });
 
 
 export default profileReducer;

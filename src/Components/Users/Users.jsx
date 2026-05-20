@@ -14,28 +14,32 @@ let Users = (props) => {
     }
 
     return (
-        props.users.map(u => <div key={u.id} className={s.user}>
-            <span>
-                <div className={s.avatar}>
-                    {u.photoUrl // if we have a photo, show it, otherwise show the first letter of the name
-                        ? <img src={u.photoUrl} alt={u.name} />
-                        : u.name[0]
-                    }
+        <div className={s.users_container}>
+            {props.users.map(u =>
+                <div key={u.id} className={s.user}>
+                    <span>
+                        <div className={s.avatar}>
+                            {u.photoUrl
+                                ? <img src={u.photoUrl} alt={u.name} />
+                                : u.name[0]
+                            }
+                        </div>
+                        <div>{u.followed
+                            ? <button onClick={() => props.unfollow(u.id)}>Unfollow</button>
+                            : <button onClick={() => props.follow(u.id)}>Follow</button>}
+                        </div>
+                    </span>
+                    <span>
+                        <div>{u.name}</div>
+                        <div>{u.status}</div>
+                    </span>
+                    <span>
+                        <div>{u.location.country}</div>
+                        <div>{u.location.city}</div>
+                    </span>
                 </div>
-                <div>{u.followed
-                    ? <button onClick={() => props.unfollow(u.id)}>Unfollow</button>
-                    : <button onClick={() => props.follow(u.id)}>Follow</button>}
-                </div>
-            </span>
-            <span>
-                <div>{u.name}</div>
-                <div>{u.status}</div>
-            </span>
-            <span>
-                <div>{u.location.country}</div>
-                <div>{u.location.city}</div>
-            </span>
-        </div>)
+            )}
+        </div>
     );
 }
 
