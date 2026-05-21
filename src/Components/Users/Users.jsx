@@ -3,16 +3,6 @@ import s from './Users.module.css';
 
 let Users = (props) => {
 
-    if (props.users.length === 0) {
-        props.setUsers([
-            { id: 1, photoUrl: '', followed: false, name: 'Alice', status: 'Online', location: { city: 'Dnipro', country: 'Ukraine' } },
-            { id: 2, photoUrl: '', followed: true, name: 'Dmytro', status: 'Offline', location: { city: 'Oslo', country: 'Norway' } },
-            { id: 3, photoUrl: '', followed: false, name: 'Charlie', status: 'Online', location: { city: 'Berlin', country: 'Germany' } },
-            { id: 4, photoUrl: '', followed: true, name: 'David', status: 'Offline', location: { city: 'Bergen', country: 'Norway' } },
-            { id: 5, photoUrl: '', followed: true, name: 'Sviatoslav', status: 'Online', location: { city: 'Kiev', country: 'Ukraine' } },
-        ]);
-    }
-
     return (
         <div className={s.users_container}>
             {props.users.map(u =>
@@ -34,8 +24,8 @@ let Users = (props) => {
                         <div>{u.status}</div>
                     </span>
                     <span>
-                        <div>{u.location.country}</div>
-                        <div>{u.location.city}</div>
+                        <div>{u.location?.country}</div>
+                        <div>{u.location?.city}</div>
                     </span>
                 </div>
             )}
