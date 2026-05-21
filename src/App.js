@@ -5,13 +5,13 @@ import Navbar from './Components/Navbar/Navbar';
 import Profile from './Components/Profile/Profile';
 import Music from './Components/Music/Music';
 import Saved from './Components/Saved/Saved';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import ChatsContainer from './Components/Chats/ChatsContainer';
 import UsersContainer from './Components/Users/UsersContainer';
 
 
 const App = (props) => {
-   
+
   return (
 
     <div className='app-wrapper'>
@@ -19,6 +19,8 @@ const App = (props) => {
       <Navbar />
       <div className='app-wrapper-content'>
         <Routes>
+          <Route path='/' element={<Navigate to='/profile' replace />} />
+
           <Route path='/profile' element={<Profile
             store={props.store}
           />} />
