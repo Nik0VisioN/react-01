@@ -11,7 +11,7 @@ let Users = (props) => {
                         <div className={s.avatar}>
                             {u.photoUrl
                                 ? <img src={u.photoUrl} alt={u.name} />
-                                : u.name[0]
+                                : u.name?.[0] || '?'
                             }
                         </div>
                         <div>{u.followed

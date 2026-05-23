@@ -4,6 +4,7 @@ const ADD_POST = 'ADD_POST';
 const UPDATE_NEW_POST_TEXT = 'UPDATE_NEW_POST_TEXT';
 const CLEAR_NEW_POST = 'CLEAR_NEW_POST';
 const TOGGLE_LIKE = 'TOGGLE_LIKE';
+const SET_POSTS = 'SET_POSTS';
 
 let initialState = {
     userInfo: {
@@ -12,23 +13,20 @@ let initialState = {
         location: 'Ukraine',
         photo: userPhoto,
     },
-    postsData: [
-        { id: 1, message: 'Hello, world!', likesCount: 15 },
-        { id: 2, message: 'How are you?', likesCount: 20 },
-        { id: 3, message: 'This is my first post!', likesCount: 30 },
-        { id: 4, message: 'Hi', likesCount: 25 },
-        { id: 5, message: 'Yo', likesCount: 10 },
-        { id: 6, message: 'Bka', likesCount: 5 },
-        { id: 7, message: 'LOASJDAWHD', likesCount: 88 },
-        { id: 8, message: 'BLABKA', likesCount: 75 },
-        { id: 9, message: 'hahahahha', likesCount: 73 }
-    ],
+    postsData: [],
     newPostText: ''
 }
 
 
 const profileReducer = (state = initialState, action) => {
     switch (action.type) {
+        case SET_POSTS:
+            return {
+                ...state,
+                postsData: action.posts
+            };
+
+
         case ADD_POST:
             return {
                 ...state,
@@ -67,6 +65,7 @@ const profileReducer = (state = initialState, action) => {
 
 }
 
+export const setPostsActionCreator = (posts) => ({ type: SET_POSTS, posts });
 export const addPostActionCreator = () => ({ type: ADD_POST });
 export const updateNewPostTextActionCreator = (newText) => ({
     type: UPDATE_NEW_POST_TEXT,

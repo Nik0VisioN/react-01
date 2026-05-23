@@ -40,3 +40,23 @@
 :global(html.dark) .text {
   text-shadow: 0 0 16px rgba(132, 212, 26, 0.4);
 }
+
+.authBtn {
+  padding: 6px 12px;
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 550;
+  transition: all 0.2s ease;
+  font-family: 'Space Mono', monospace;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.authBtn:hover {
+  background: var(--accent);
+  color: white;
+}
