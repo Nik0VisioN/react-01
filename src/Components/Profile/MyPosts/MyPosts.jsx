@@ -2,26 +2,35 @@ import React from 'react';
 import content_area from './MyPosts.module.css';
 import Post from './Post/Post';
 
-
 const MyPosts = (props) => {
 
-  let postsElements = props.posts.map(post => <Post key={post.id} id={post.id} message={post.message} likesCount={post.likesCount} liked={post.liked} toggleLike={props.toggleLike} />);
+  const postsElements = props.posts.map(post => (
+    <Post
+      key={post.id}
+      id={post.id}
+      message={post.message}
+      authorName={post.authorName}
+      userId={post.userId}
+      currentUserId={props.currentUserId}
+      profileOwnerId={props.profileOwnerId}
+      liked={post.liked}
+      likesCount={post.likesCount}
+      toggleLike={props.toggleLike}
+      deletePost={props.deletePost}
+    />
+  ));
 
-  let newPostElement = React.createRef();
+  const newPostElement = React.createRef();
 
-  let onAddPost = () => {
-    props.addPost();
-  }
+  const onAddPost = () => props.addPost();
 
-  let removeNewPost = () => {
-    props.removePost();
-  }
+  // ← Remove just clean textarea
+  const clearTextarea = () => props.updateNewPostText('');
 
-
-  let onPostChange = () => {
-    let text = newPostElement.current.value;
-    props.updateNewPostText(text)
-  }
+  const onPostChange = () => {
+    const text = newPostElement.current.value;
+    props.updateNewPostText(text);
+  };
 
   return (
     <div className={content_area.my_posts}>
@@ -30,18 +39,27 @@ const MyPosts = (props) => {
           onChange={onPostChange}
           ref={newPostElement}
           value={props.newPostText}
-          placeholder='Write your text ' />
+          placeholder='Write your text '
+        />
 
         <div className={content_area.buttons}>
-          <button onClick={onAddPost} className={content_area.btn_add}>Add post</button>
-          <button onClick={removeNewPost} className={content_area.btn_remove}>Remove</button>
+          <button onClick={onAddPost} className={content_area.btn_add}>
+            Add post
+          </button>
+          <button
+            onClick={clearTextarea}
+            className={content_area.btn_remove}
+            disabled={!props.newPostText}
+          >
+            Remove
+          </button>
         </div>
       </div>
       <div className={content_area.posts}>
         {postsElements}
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default MyPosts;

@@ -1,0 +1,49 @@
+.theme_switch {
+    position: relative;
+    width: 40px;
+    height: 20px;
+    cursor: pointer;
+    border-radius: 999px;
+    background: linear-gradient(145deg, #ffffff, #e6e6e6);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(255, 255, 255, 0.8);
+    transition: all 0.4s ease;
+}
+
+.track {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #87CEEB, #4A90E2);
+    overflow: hidden;
+    box-shadow: inset 0 5px 12px rgba(0, 0, 0, 0.25);
+    transition: background 0.4s ease;
+}
+
+.thumb {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #FFD700, #FFA500);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+.theme_switch.dark {
+    background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+}
+
+.theme_switch.dark .track {
+    background: linear-gradient(180deg, #1a1a3e, #0a0a1f);
+}
+
+.theme_switch.dark .thumb {
+    left: 20px;
+    background: radial-gradient(circle at 30% 30%, #e0e0e0, #888);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), inset -4px -2px 0 #555;
+}

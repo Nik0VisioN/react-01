@@ -10,6 +10,7 @@
   align-items: center;
   gap: 10px;
   margin-bottom: 10px;
+  position: relative;
 }
 
 .avatar {
@@ -23,6 +24,7 @@
   font-weight: 600;
   font-size: 14px;
   color: var(--text);
+  flex: 1;
 }
 
 .message {
@@ -42,4 +44,24 @@
 
 .heart {
   color: #c0392b;
+}
+
+.deleteBtn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted, #888);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.5;
+    transition: all 0.2s ease;
+}
+
+.deleteBtn:hover {
+    background: rgba(255, 89, 89, 0.1);
+    color: #ff5555;
+    opacity: 1;
 }

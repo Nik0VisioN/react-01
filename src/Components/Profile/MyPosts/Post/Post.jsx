@@ -1,27 +1,67 @@
 import React from 'react';
-import content_area from './Post.module.css';
+import s from './Post.module.css';
 
 const Post = (props) => {
+  const {
+    id,
+    message,
+    authorName,
+    userId,
+    currentUserId,
+    profileOwnerId,
+    liked,
+    likesCount,
+    toggleLike,
+    deletePost,
+  } = props;
+
+  const canDelete =
+    currentUserId &&
+    (currentUserId === userId || currentUserId === profileOwnerId);
+
+  
+
   return (
-    <div className={content_area.post}>
-      <div className={content_area.header}>
+    <div className={s.post}>
+      <div className={s.header}>
         <img
           src='https://cdn-icons-png.flaticon.com/512/149/149071.png'
           alt='avatar'
-          className={content_area.avatar}
+          className={s.avatar}
         />
-        <span className={content_area.nickname}>nickname</span>
+        <span className={s.nickname}>{authorName || 'Unknown'}</span>
+
+        {canDelete && (
+          <button
+            className={s.deleteBtn}
+            onClick={() => deletePost(id)}
+            aria-label="Delete post"
+            title="Delete post"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14zM10 11v6M14 11v6"
+                stroke="currentColor" strokeWidth="2"
+                strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        )}
       </div>
-      <div className={content_area.message}>
-        {props.message}
+
+      <div className={s.message}>
+        {message}
       </div>
-      <div className={content_area.likes} onClick={() => props.toggleLike(props.id)} style={{ cursor: 'pointer' }}>
-        <span className={content_area.heart} style={{ color: props.liked ? '#e74c3c' : '#888' }}>
-          {props.liked ? '♥' : '♡'}
+
+      <div
+        className={s.likes}
+        onClick={() => toggleLike(id)}
+        style={{ cursor: 'pointer' }}
+      >
+        <span className={s.heart} style={{ color: liked ? '#e74c3c' : '#888' }}>
+          {liked ? '♥' : '♡'}
         </span>
-        {props.likesCount}
+        {likesCount}
       </div>
     </div>
-  )
-}
+  );
+};
 export default Post;
