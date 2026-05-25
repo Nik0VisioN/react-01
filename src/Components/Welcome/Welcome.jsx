@@ -4,6 +4,8 @@ import s from './Welcome.module.css';
 import togetherLogo from '../Header/Together_logo.png';
 import ThemeSwitch from '../ThemeSwitch/ThemeSwitch';
 
+const textVersion = 'v0.3';
+
 const Welcome = () => {
     return (
         <div className={s.page}>
@@ -16,7 +18,7 @@ const Welcome = () => {
                     <img src={togetherLogo} alt="Together" className={s.brandLogo} />
                     <span className={s.brandName}>Together</span>
                 </div>
-                <div className={s.topBarActions}>           {/* ← обёртка для двух элементов */}
+                <div className={s.topBarActions}>           {/* ← wrapper for two elements */}
                     <ThemeSwitch />
                     <Link to="/login" className={s.signInLink}>Sign in</Link>
                 </div>
@@ -26,7 +28,7 @@ const Welcome = () => {
             <section className={s.hero}>
                 <div className={s.heroBadge}>
                     <span className={s.dot}></span>
-                    Now in beta · v0.1
+                    Now in beta · {textVersion}
                 </div>
 
                 <h1 className={s.heroTitle}>
@@ -178,7 +180,7 @@ const Welcome = () => {
             <footer className={s.footer}>
                 <p>
                     Built by <a href="https://github.com/Nik0VisioN" target="_blank" rel="noopener noreferrer">
-                        NikoVisioN</a> · <span>Together v0.3</span>
+                        NikoVisioN</a> · <span>Together {textVersion}</span>
                 </p>
             </footer>
         </div>

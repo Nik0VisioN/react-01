@@ -5,7 +5,7 @@ import Navbar from './Components/Navbar/Navbar';
 import Profile from './Components/Profile/Profile';
 import Music from './Components/Music/Music';
 import Saved from './Components/Saved/Saved';
-import { Routes, Route, /*Navigate*/ useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import ChatsContainer from './Components/Chats/ChatsContainer';
 // import UsersContainer from './Components/Users/UsersContainer';
 import Authorisation from './Components/Auth/Authorisation';
@@ -28,7 +28,7 @@ const App = (props) => {
       <Navbar />
       <div className='app-wrapper-content'>
         <Routes>
-          {/* <Route path='/' element={<Navigate to='/profile' replace />} /> */}
+          <Route path='/' element={<Navigate to='/welcome' replace />} />
           {/* Public for all */}
           <Route path="/profile/:userId" element={<Profile />} />
 
