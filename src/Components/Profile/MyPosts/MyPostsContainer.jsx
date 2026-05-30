@@ -28,7 +28,7 @@ const MyPostsContainer = ({ profileId }) => {
       // load posts only for this profile
       const { data: postsData, error: postsError } = await supabase
         .from('posts')
-        .select('id, message, user_id, profile_id, created_at, author:profiles!user_id ( id, name )')
+        .select('id, message, user_id, profile_id, created_at, author:profiles!user_id ( id, name, photo_url )')
         .eq('profile_id', profileId)
         .order('created_at', { ascending: false });
 
@@ -58,6 +58,7 @@ const MyPostsContainer = ({ profileId }) => {
         id: p.id,
         message: p.message,
         authorName: p.author?.name || 'Unknown',
+        authorPhoto: p.author?.photo_url || null,
         userId: p.user_id,
         likesCount: likesByPost[p.id] || 0,
         liked: userLikedPosts.has(p.id)

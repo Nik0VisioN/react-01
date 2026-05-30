@@ -10,6 +10,7 @@ const MyPosts = (props) => {
       id={post.id}
       message={post.message}
       authorName={post.authorName}
+      authorPhoto={post.authorPhoto}      // >>> добавил
       userId={post.userId}
       currentUserId={props.currentUserId}
       profileOwnerId={props.profileOwnerId}
@@ -21,12 +22,8 @@ const MyPosts = (props) => {
   ));
 
   const newPostElement = React.createRef();
-
   const onAddPost = () => props.addPost();
-
-  // ← Remove just clean textarea
   const clearTextarea = () => props.updateNewPostText('');
-
   const onPostChange = () => {
     const text = newPostElement.current.value;
     props.updateNewPostText(text);
@@ -41,18 +38,9 @@ const MyPosts = (props) => {
           value={props.newPostText}
           placeholder='Write your text '
         />
-
         <div className={content_area.buttons}>
-          <button onClick={onAddPost} className={content_area.btn_add}>
-            Add post
-          </button>
-          <button
-            onClick={clearTextarea}
-            className={content_area.btn_remove}
-            disabled={!props.newPostText}
-          >
-            Remove
-          </button>
+          <button onClick={onAddPost} className={content_area.btn_add}>Add post</button>
+          <button onClick={clearTextarea} className={content_area.btn_remove} disabled={!props.newPostText}>Remove</button>
         </div>
       </div>
       <div className={content_area.posts}>

@@ -6,6 +6,7 @@ const Post = (props) => {
     id,
     message,
     authorName,
+    authorPhoto,
     userId,
     currentUserId,
     profileOwnerId,
@@ -24,7 +25,9 @@ const Post = (props) => {
     <div className={s.post}>
       <div className={s.header}>
         <div className={s.avatar}>
-          {authorName ? authorName[0].toUpperCase() : '?'}
+          {authorPhoto                                       // photo_url by author, if we have it, show it, otherwise show first letter of name or '?' if no name
+            ? <img src={authorPhoto} alt={authorName} />
+            : (authorName ? authorName[0].toUpperCase() : '?')}
         </div>
         <span className={s.nickname}>{authorName || 'Unknown'}</span>
 
