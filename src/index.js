@@ -6,6 +6,7 @@ import store from './Redux/redux_store';
 import './index.css';
 import { Provider } from 'react-redux';
 import { AuthProvider } from './AuthContext';
+import { PresenceProvider } from './Components/Auth/PresenceContext';
 
 
 
@@ -16,7 +17,9 @@ root.render(
     <BrowserRouter>
         <Provider store={store}>
             <AuthProvider>
-                <App />
+                <PresenceProvider>
+                    <App />
+                </PresenceProvider>
             </AuthProvider>
         </Provider>
     </BrowserRouter>

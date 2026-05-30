@@ -1,35 +1,42 @@
 .my_posts {
-  padding: clamp(12px, 2vw, 20px);
+  padding: clamp(14px, 2.5vw, 24px);
   background: var(--bg-secondary);
-  min-height: 100vh;
 }
 
 .editor {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 22px;
   background: var(--bg-card);
-  padding: clamp(12px, 2vw, 16px);
-  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: clamp(14px, 2vw, 18px);
+  border-radius: 16px;
   box-shadow: var(--shadow);
 }
 
 .editor textarea {
   resize: none;
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px;
+  border-radius: 12px;
+  padding: 14px 16px;
   font-size: 14px;
   font-family: inherit;
   outline: none;
-  height: 80px;
+  height: 90px;
   background: var(--bg);
   color: var(--text);
+  transition: all 0.2s;
+}
+
+.editor textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
 }
 
 .editor textarea:focus {
-  border-color: var(--accent);
+  border-color: rgba(255, 107, 107, 0.5);
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.12);
 }
 
 .buttons {
@@ -39,53 +46,52 @@
 }
 
 .btn_add {
-  padding: 8px 18px;
-  background: var(--accent);
-  color: white;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 22px;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+  color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 14px;
-  transition: background 0.2s;
+  font-weight: 600;
+  font-family: 'Space Mono', monospace;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 22px rgba(255, 107, 107, 0.3);
 }
 
 .btn_add:hover {
-  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(255, 107, 107, 0.4);
 }
 
 .btn_remove {
-  padding: 8px 18px;
+  padding: 10px 22px;
   background: transparent;
-  color: var(--accent);
-  border: 1px solid var(--accent);
-  border-radius: 8px;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 10px;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 600;
+  font-family: 'Space Mono', monospace;
   transition: all 0.2s;
 }
 
-.btn_remove:hover {
-  background: var(--accent);
-  color: white;
+.btn_remove:hover:not(:disabled) {
+  border-color: rgba(255, 107, 107, 0.4);
+  color: var(--text);
+}
+
+.btn_remove:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .posts {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-}
-
-.post {
-  background: var(--bg-card);
-  padding: 14px 16px;
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  font-size: 14px;
-  color: var(--text);
-}
-
-.post_likes {
-  margin-top: 8px;
-  color: var(--text-muted);
-  font-size: 13px;
+  gap: 14px;
 }

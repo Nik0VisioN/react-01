@@ -112,7 +112,7 @@ const Authorisation = () => {
 
                     <form onSubmit={handleSubmit} className={s.form} noValidate>
                         <div className={s.field}>
-                            <label>Email</label>
+                            <label>Email / for testing: 1111@test.com</label>
                             <input
                                 type="email"
                                 placeholder="you@example.com"
@@ -132,7 +132,7 @@ const Authorisation = () => {
                         </div>
 
                         <div className={s.field}>
-                            <label>Password</label>
+                            <label>Password / for testing: 1111@test.com</label>
                             <input
                                 type="password"
                                 placeholder="••••••••"

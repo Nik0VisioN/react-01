@@ -19,16 +19,13 @@ const Post = (props) => {
     currentUserId &&
     (currentUserId === userId || currentUserId === profileOwnerId);
 
-  
 
   return (
     <div className={s.post}>
       <div className={s.header}>
-        <img
-          src='https://cdn-icons-png.flaticon.com/512/149/149071.png'
-          alt='avatar'
-          className={s.avatar}
-        />
+        <div className={s.avatar}>
+          {authorName ? authorName[0].toUpperCase() : '?'}
+        </div>
         <span className={s.nickname}>{authorName || 'Unknown'}</span>
 
         {canDelete && (
@@ -51,17 +48,15 @@ const Post = (props) => {
         {message}
       </div>
 
-      <div
-        className={s.likes}
-        onClick={() => toggleLike(id)}
-        style={{ cursor: 'pointer' }}
-      >
-        <span className={s.heart} style={{ color: liked ? '#e74c3c' : '#888' }}>
+      <button className={s.likes} onClick={() => toggleLike(id)}>
+        <span className={s.heart} style={{ color: liked ? '#e74c3c' : 'inherit' }}>
           {liked ? '♥' : '♡'}
         </span>
         {likesCount}
-      </div>
+      </button>
     </div>
   );
 };
+
+
 export default Post;

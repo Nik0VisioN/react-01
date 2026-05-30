@@ -2,6 +2,7 @@
 
 .header {
   grid-area: h;
+  position: relative;
   background: var(--bg-nav);
   display: flex;
   align-items: center;
@@ -9,8 +10,18 @@
   padding: 0 clamp(12px, 3vw, 30px) 0 clamp(56px, 8vw, 80px);
   font-family: 'Space Mono', monospace;
   box-shadow: var(--shadow);
-  border-bottom: 1px solid var(--border);
   z-index: 100;
+}
+
+/* тонкая коралловая линия снизу — в духе Welcome */
+.header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 107, 107, 0.4), transparent);
 }
 
 .logo {
@@ -33,30 +44,35 @@
   user-select: none;
 }
 
+/* свечение бренда в тёмной теме — теперь коралловое */
 :global(html.dark) .header img {
-  filter: drop-shadow(0 0 8px rgba(132, 212, 26, 0.4)) drop-shadow(0 0 16px rgba(224, 194, 22, 0.3));
+  filter:
+    drop-shadow(0 0 8px rgba(255, 107, 107, 0.45))
+    drop-shadow(0 0 16px rgba(255, 142, 83, 0.3));
 }
 
 :global(html.dark) .text {
-  text-shadow: 0 0 16px rgba(132, 212, 26, 0.4);
+  text-shadow: 0 0 16px rgba(255, 107, 107, 0.45);
 }
 
 .authBtn {
-  padding: 6px 12px;
+  padding: 8px 18px;
   background: transparent;
   color: var(--accent);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--border);
   border-radius: 10px;
   cursor: pointer;
-  font-size: 12px;
-  font-weight: 550;
+  font-size: 13px;
+  font-weight: 600;
   transition: all 0.2s ease;
   font-family: 'Space Mono', monospace;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   text-decoration: none;
 }
 
 .authBtn:hover {
-  background: var(--accent);
-  color: white;
+  border-color: rgba(255, 107, 107, 0.5);
+  background: rgba(255, 107, 107, 0.08);
+  transform: translateY(-1px);
 }

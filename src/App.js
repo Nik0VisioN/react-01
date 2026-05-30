@@ -11,6 +11,7 @@ import ChatsContainer from './Components/Chats/ChatsContainer';
 import Authorisation from './Components/Auth/Authorisation';
 import RequireAuth from './Components/Auth/RequireAuth';
 import Welcome from './Components/Welcome/Welcome';
+import EditProfile from './Components/Profile/EditProfile';
 
 const App = (props) => {
   const location = useLocation();
@@ -33,6 +34,9 @@ const App = (props) => {
           <Route path="/profile/:userId" element={<Profile />} />
 
           {/* Private! Only for authenticated users */}
+          <Route path="/profile/edit" element={
+            <RequireAuth><EditProfile /></RequireAuth>
+          } />
           <Route path="/profile" element={
             <RequireAuth><Profile /></RequireAuth>
           } />

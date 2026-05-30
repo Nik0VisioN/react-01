@@ -1,42 +1,73 @@
 import React, { useState } from 'react';
-import navbar_space from './Navbar.module.css';
+import s from './Navbar.module.css';
 import { NavLink } from 'react-router-dom';
 import ThemeSwitch from '../ThemeSwitch/ThemeSwitch';
 
+const NAV = [
+  {
+    to: '/profile', label: 'Profile',
+    icon: <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+  },
+  {
+    to: '/chats', label: 'Chats',
+    icon: <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+  },
+  {
+    to: '/users', label: 'Users',
+    icon: <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+  },
+  {
+    to: '/music', label: 'Music',
+    icon: <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
+  },
+  {
+    to: '/saved', label: 'Saved',
+    icon: <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" /></svg>
+  },
+];
+
 const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const closeMenu = () => setIsOpen(false);
 
-    const [isOpen, setIsOpen] = useState(false);  // state menu open/close
-    const closeMenu = () => setIsOpen(false);     // close menu on link click or overlay click
+  return (
+    <>
+      <button
+        className={`${s.burger} ${isOpen ? s.burgerOpen : ''}`}
+        onClick={() => setIsOpen(prev => !prev)}
+        aria-label="Menu"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
 
-    return (
-        <>
+      {/* overlay */}
+      {isOpen && <div className={s.overlay} onClick={closeMenu}></div>}
 
-            <button
-                className={navbar_space.burger}
-                onClick={() => setIsOpen(prev => !prev)}
-                aria-label="Menu"
-            >
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
+      <nav className={`${s.nav} ${isOpen ? s.open : ''}`}>
+  <div className={s.theme_wrapper}>
+    <ThemeSwitch />
+  </div>
 
-            {/* overlay */}
-            {isOpen && <div className={navbar_space.overlay} onClick={closeMenu}></div>}
-
-            <nav className={`${navbar_space.nav} ${isOpen ? navbar_space.open : ''}`}>
-                <div className={navbar_space.theme_wrapper}>
-                    <ThemeSwitch />
-                </div>
-
-                <div><NavLink to="/profile" className={navbar_space.text_nav} onClick={closeMenu}>Profile</NavLink></div>
-                <div><NavLink to="/chats" className={navbar_space.text_nav} onClick={closeMenu}>Chats</NavLink></div>
-                <div><NavLink to="/users" className={navbar_space.text_nav} onClick={closeMenu}>Users</NavLink></div>
-                <div><NavLink to="/music" className={navbar_space.text_nav} onClick={closeMenu}>Music</NavLink></div>
-                <div><NavLink to="/saved" className={navbar_space.text_nav} onClick={closeMenu}>Saved</NavLink></div>
-            </nav>
-        </>
-    )
-}
+  <div className={s.links}>
+    {NAV.map(item => (
+      <NavLink
+        key={item.to}
+        to={item.to}
+        onClick={closeMenu}
+        className={({ isActive }) =>
+          isActive ? `${s.text_nav} ${s.active}` : s.text_nav
+        }
+      >
+        <span className={s.icon}>{item.icon}</span>
+        {item.label}
+      </NavLink>
+    ))}
+  </div>
+</nav>
+    </>
+  );
+};
 
 export default Navbar;
