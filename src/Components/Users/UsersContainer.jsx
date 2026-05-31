@@ -15,12 +15,10 @@ const UsersContainer = () => {
         });
     }, []);
 
-
     useEffect(() => {
-        if (!currentUserId) return;     //wait until we know current user ID to load users list
+        if (!currentUserId) return;
 
         const loadUsers = async () => {
-            // Load all profiles(except current user)
             const { data: profiles, error: profilesError } = await supabase
                 .from('profiles')
                 .select('*');
@@ -30,33 +28,36 @@ const UsersContainer = () => {
                 return;
             }
 
-            // Load follows for current user to determine who is followed
-            const { data: follows, error: followsError } = await supabase
+            // кого я добавил (я → он)
+            const { data: following, error: followingError } = await supabase
                 .from('follows')
                 .select('following_id')
                 .eq('follower_id', currentUserId);
 
-            if (followsError) {
-                console.error('Error loading follows:', followsError);
+            // кто добавил меня (он → я)
+            const { data: followers, error: followersError } = await supabase
+                .from('follows')
+                .select('follower_id')
+                .eq('following_id', currentUserId);
+
+            if (followingError || followersError) {
+                console.error('Error loading follows:', followingError || followersError);
                 return;
             }
 
-            // make Set of following IDs for quick lookup
-            const followingSet = new Set(follows.map(f => f.following_id));
+            const followingSet = new Set((following || []).map(f => f.following_id)); // i -> he
+            const followerSet = new Set((followers || []).map(f => f.follower_id));   // he - > me
 
-            // make massive of users with "followed" field
             const formatted = profiles
-                .filter(p => p.id !== currentUserId)   // don't show current user in the list
+                .filter(p => p.id !== currentUserId)
                 .map(p => ({
                     id: p.id,
                     name: p.name,
                     status: p.status,
                     photoUrl: p.photo_url,
-                    followed: followingSet.has(p.id),
-                    location: {
-                        city: p.city,
-                        country: p.country
-                    }
+                    followed: followingSet.has(p.id),     // iFollow
+                    theyFollow: followerSet.has(p.id),    // we are friends if both follow each other
+                    location: { city: p.city, country: p.country },
                 }));
 
             dispatch(setUsersActionCreator(formatted));
@@ -66,26 +67,22 @@ const UsersContainer = () => {
     }, [dispatch, currentUserId]);
 
     const follow = async (userId) => {
-        await supabase.from('follows').insert({
-            follower_id: currentUserId,
-            following_id: userId
-        });
-        dispatch(followActionCreator(userId));   // reload UI
+        const { error } = await supabase.from('follows')
+            .insert({ follower_id: currentUserId, following_id: userId });
+        if (error) { console.error('Follow error:', error); return; }
+        dispatch(followActionCreator(userId));
     };
 
     const unfollow = async (userId) => {
-        await supabase.from('follows')
+        const { error } = await supabase.from('follows')
             .delete()
             .eq('follower_id', currentUserId)
             .eq('following_id', userId);
+        if (error) { console.error('Unfollow error:', error); return; }
         dispatch(unfollowActionCreator(userId));
     };
 
-    return <Users
-        users={users}
-        follow={follow}
-        unfollow={unfollow}
-    />;
-}
+    return <Users users={users} follow={follow} unfollow={unfollow} />;
+};
 
 export default UsersContainer;

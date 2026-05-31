@@ -13,6 +13,9 @@ const EditProfile = () => {
     const [name, setName] = useState('');
     const [age, setAge] = useState('');
     const [bio, setBio] = useState('');
+    const [city, setCity] = useState('');
+    const [country, setCountry] = useState('');
+    const [locationVisible, setLocationVisible] = useState(false);
     const [avatarUrl, setAvatarUrl] = useState('');
     const [coverUrl, setCoverUrl] = useState('');
     const [uploads, setUploads] = useState([]);
@@ -47,7 +50,7 @@ const EditProfile = () => {
         const load = async () => {
             const { data, error } = await supabase
                 .from('profiles')
-                .select('name, age, bio, photo_url, cover_url')
+                .select('name, age, bio, photo_url, cover_url, city, country, location_visible') // >>> + city, country, location_visible
                 .eq('id', userId)
                 .single();
 
@@ -56,11 +59,14 @@ const EditProfile = () => {
                 setName(data.name ?? '');
                 setAge(data.age ?? '');
                 setBio(data.bio ?? '');
+                setCity(data.city ?? '');
+                setCountry(data.country ?? '');
+                setLocationVisible(data.location_visible ?? false);
                 setAvatarUrl(data.photo_url ?? '');
                 setCoverUrl(data.cover_url ?? '');
             }
             setLoading(false);
-            loadUploads(); // download user's uploads to show them in EditProfile (optional, can be used for "My uploads" section or just to delete old uploads)
+            loadUploads();
         };
         load();
     }, [userId, loadUploads]);
@@ -118,7 +124,7 @@ const EditProfile = () => {
         const { error } = await supabase.storage.from(BUCKET).remove([path]);
         if (error) { setError('Delete failed: ' + error.message); return; }
 
-        // если удалили текущий аватар/обложку — снимаем их из формы
+        // if deleted file was in use as avatar or cover, clear it
         if (url === avatarUrl) setAvatarUrl('');
         if (url === coverUrl) setCoverUrl('');
         loadUploads();
@@ -146,6 +152,9 @@ const EditProfile = () => {
                 bio: bio.trim() || null,
                 photo_url: avatarUrl || null,
                 cover_url: coverUrl || null,
+                city: city || null,
+                country: country || null,
+                location_visible: locationVisible,
             })
             .eq('id', userId);
         setSaving(false);
@@ -241,6 +250,30 @@ const EditProfile = () => {
                             <label className={s.label}>Age</label>
                             <input className={s.input} type="number" min="13" max="120" value={age} onChange={e => setAge(e.target.value)} placeholder="Your age" />
                         </div>
+
+                        {/* Location */}
+                        <div className={s.field}>
+                            <label className={s.label}>Location</label>
+                            <div className={s.locationRow}>
+                                <input className={s.input} value={city} onChange={e => setCity(e.target.value)} placeholder="City" />
+                                <input className={s.input} value={country} onChange={e => setCountry(e.target.value)} placeholder="Country" />
+                            </div>
+
+                            <label className={s.toggleRow}>
+                                <span className={s.toggleText}>
+                                    Show location on my profile
+                                    <span className={s.toggleHint}>When off, only you can see it.</span>
+                                </span>
+                                <input
+                                    type="checkbox"
+                                    className={s.toggleInput}
+                                    checked={locationVisible}
+                                    onChange={e => setLocationVisible(e.target.checked)}
+                                />
+                                <span className={s.toggleTrack}></span>
+                            </label>
+                        </div>
+
 
                         <div className={s.field}>
                             <label className={s.label}>Bio</label>

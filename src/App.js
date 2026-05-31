@@ -7,7 +7,7 @@ import Music from './Components/Music/Music';
 import Saved from './Components/Saved/Saved';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import ChatsContainer from './Components/Chats/ChatsContainer';
-// import UsersContainer from './Components/Users/UsersContainer';
+import UsersContainer from './Components/Users/UsersContainer';
 import Authorisation from './Components/Auth/Authorisation';
 import RequireAuth from './Components/Auth/RequireAuth';
 import Welcome from './Components/Welcome/Welcome';
@@ -39,6 +39,9 @@ const App = (props) => {
           } />
           <Route path="/profile" element={
             <RequireAuth><Profile /></RequireAuth>
+          } />
+          <Route path="/users" element={
+            <RequireAuth><UsersContainer /></RequireAuth>
           } />
           <Route path="/chats" element={
             <RequireAuth><ChatsContainer store={props.store} /></RequireAuth>

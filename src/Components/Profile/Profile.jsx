@@ -27,6 +27,10 @@ const Profile = () => {
 
   const [lastSeen, setLastSeen] = useState(null);
 
+  const [iFollow, setIFollow] = useState(false);     // i follow him
+  const [theyFollow, setTheyFollow] = useState(false); // he follows me
+  const [relLoading, setRelLoading] = useState(true);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -35,7 +39,7 @@ const Profile = () => {
     const loadProfile = async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, name, status, city, country, photo_url, cover_url, bio, age, created_at, last_seen')
+        .select('id, name, status, city, country, photo_url, cover_url, bio, age, created_at, last_seen, location_visible')
         .eq('id', profileId)
         .single();   // .single() returns single object instead of array, so we don't need data[0] later
 
@@ -62,7 +66,6 @@ const Profile = () => {
       dispatch(setUserInfoActionCreator({
         name: data.name,
         title: data.status || '',
-        location: [data.city, data.country].filter(Boolean).join(', '),
         photo: data.photo_url,
         cover: data.cover_url,
         bio: data.bio,
@@ -71,13 +74,15 @@ const Profile = () => {
         followers: followers ?? 0,
         following: following ?? 0,
         posts: posts ?? 0,
+        location: [data.city, data.country].filter(Boolean).join(', '),
+        locationVisible: data.location_visible,
       }));
     };
 
     loadProfile();
   }, [profileId, dispatch]);
 
-  // if profile is offline, then load last_seen and show "Last seen: date" in profile info
+  // if profile is offline, load last_seen from database to show "Last seen X ago". For online profiles we show "Online", so no need to load last_seen.
   useEffect(() => {
     if (!profileId || isOnline) return;
     let active = true;
@@ -86,15 +91,83 @@ const Profile = () => {
     return () => { active = false; };
   }, [isOnline, profileId]);
 
+  // load relationship between current user and profile user (i follow him, he follows me) to show correct state of "Add friend" button and decide whether to show profile content (if profile is private and we are not friends, we hide content and show "This profile is private" message instead)
+  useEffect(() => {
+    let active = true;
+    const loadRel = async () => {
+      if (!profileId || !currentUserId || isOwnProfile) {
+        setIFollow(false); setTheyFollow(false); setRelLoading(false);
+        return;
+      }
+      setRelLoading(true);
+      const [{ data: mine }, { data: theirs }] = await Promise.all([
+        supabase.from('follows').select('follower_id')
+          .eq('follower_id', currentUserId).eq('following_id', profileId).maybeSingle(),
+        supabase.from('follows').select('follower_id')
+          .eq('follower_id', profileId).eq('following_id', currentUserId).maybeSingle(),
+      ]);
+      if (!active) return;
+      setIFollow(!!mine);
+      setTheyFollow(!!theirs);
+      setRelLoading(false);
+    };
+    loadRel();
+    return () => { active = false; };
+  }, [profileId, currentUserId, isOwnProfile]);
 
-  // wait when AuthContext make right session
+  const addFriend = async () => {
+    if (!currentUserId) return;
+    const { error } = await supabase.from('follows')
+      .insert({ follower_id: currentUserId, following_id: profileId });
+    if (error) { console.error('Add friend error:', error); return; }
+    setIFollow(true);
+  };
+
+  const removeFriend = async () => {
+    if (!currentUserId) return;
+    const { error } = await supabase.from('follows').delete()
+      .eq('follower_id', currentUserId).eq('following_id', profileId);
+    if (error) { console.error('Remove friend error:', error); return; }
+    setIFollow(false);
+  };
+
+  const onFriendClick = () => (iFollow ? removeFriend() : addFriend());
+
+  // state of friendship: 'none' (no one follows), 'friends' (mutual follow), 'requested' (i follow, they don't), 'incoming' (they follow, i don't)
+  let friendState = 'none';
+  if (iFollow && theyFollow) friendState = 'friends';
+  else if (iFollow) friendState = 'requested';
+  else if (theyFollow) friendState = 'incoming';
+
+  const isFriends = iFollow && theyFollow;
+  const canSeeContent = isOwnProfile || isFriends;
+
   if (loading) return <div>Loading...</div>;
   if (!profileId) return <Navigate to="/users" replace />;
 
   return (
     <div className={content_area.profile}>
-      <ProfileInfo isOwnProfile={isOwnProfile} isOnline={isOnline} lastSeen={lastSeen} />
-      <MyPostsContainer profileId={profileId} />
+      <ProfileInfo
+        isOwnProfile={isOwnProfile}
+        isOnline={isOnline}
+        lastSeen={lastSeen}
+        isFriends={isFriends}
+        friendState={friendState}
+        friendBusy={relLoading}
+        onFriendClick={currentUserId && !isOwnProfile ? onFriendClick : undefined}
+      />
+
+      {canSeeContent ? (
+        <MyPostsContainer profileId={profileId} />
+      ) : (
+        <div className={content_area.locked}>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          <span className={content_area.lockedTitle}>This profile is private</span>
+          <span>Add as a friend to see posts, bio and more.</span>
+        </div>
+      )}
     </div>
   );
 };

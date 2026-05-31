@@ -286,3 +286,78 @@
     flex-basis: 100%;
   }
 }
+
+.friendBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: 12px;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.friendBtn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.friendBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* main action — add / add in response */
+.fr_none,
+.fr_incoming {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(255, 107, 107, 0.32);
+}
+
+.fr_none:hover,
+.fr_incoming:hover {
+  transform: translateY(-1px);
+}
+
+/* 2 action - invite sent / already friends */
+.fr_requested,
+.fr_friends {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.fr_requested:hover,
+.fr_friends:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.gateHint {
+  margin-left: auto;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.gateHint svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
