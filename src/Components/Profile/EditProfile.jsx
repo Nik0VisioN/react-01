@@ -16,6 +16,7 @@ const EditProfile = () => {
     const [city, setCity] = useState('');
     const [country, setCountry] = useState('');
     const [locationVisible, setLocationVisible] = useState(false);
+    const [showLastSeen, setShowLastSeen] = useState(true);
     const [avatarUrl, setAvatarUrl] = useState('');
     const [coverUrl, setCoverUrl] = useState('');
     const [uploads, setUploads] = useState([]);
@@ -50,21 +51,30 @@ const EditProfile = () => {
         const load = async () => {
             const { data, error } = await supabase
                 .from('profiles')
-                .select('name, age, bio, photo_url, cover_url, city, country, location_visible') // >>> + city, country, location_visible
+                .select('name, photo_url, cover_url, city, country, location_visible, show_last_seen') // without bio/age !!!
                 .eq('id', userId)
                 .single();
 
-            if (error) setError(error.message);
+            if (error) { setError(error.message); }
             else if (data) {
                 setName(data.name ?? '');
-                setAge(data.age ?? '');
-                setBio(data.bio ?? '');
                 setCity(data.city ?? '');
                 setCountry(data.country ?? '');
-                setLocationVisible(data.location_visible ?? false);
+                setLocationVisible(data.location_visible ?? true);
+                setShowLastSeen(data.show_last_seen ?? true);
                 setAvatarUrl(data.photo_url ?? '');
                 setCoverUrl(data.cover_url ?? '');
             }
+
+            // private data (bio, age) - we load it separately because it's not needed for profile info and we want to avoid loading it if profile is private and we are not friends
+            const { data: priv } = await supabase
+                .from('profiles_private')
+                .select('bio, age')
+                .eq('id', userId)
+                .maybeSingle();
+            setBio(priv?.bio ?? '');
+            setAge(priv?.age ?? '');
+
             setLoading(false);
             loadUploads();
         };
@@ -144,22 +154,29 @@ const EditProfile = () => {
         }
 
         setSaving(true);
-        const { error } = await supabase
+
+        // public fields → profiles
+        const { error: pubErr } = await supabase
             .from('profiles')
             .update({
                 name: name.trim(),
-                age: ageValue,
-                bio: bio.trim() || null,
+                city: city.trim() || null,
+                country: country.trim() || null,
+                location_visible: locationVisible,
+                show_last_seen: showLastSeen,
                 photo_url: avatarUrl || null,
                 cover_url: coverUrl || null,
-                city: city || null,
-                country: country || null,
-                location_visible: locationVisible,
             })
             .eq('id', userId);
+
+        // private fields → profiles_private
+        const { error: privErr } = await supabase
+            .from('profiles_private')
+            .upsert({ id: userId, bio: bio.trim() || null, age: ageValue }, { onConflict: 'id' });
+
         setSaving(false);
 
-        if (error) setError(error.message);
+        if (pubErr || privErr) setError((pubErr || privErr).message);
         else setSaved(true);
     };
 
@@ -274,6 +291,22 @@ const EditProfile = () => {
                             </label>
                         </div>
 
+                        <div className={s.field}>
+                            <label className={s.label}>Privacy</label>
+                            <label className={s.toggleRow}>
+                                <span className={s.toggleText}>
+                                    Show my last seen
+                                    <span className={s.toggleHint}>When off, others won't see how long ago you were online.</span>
+                                </span>
+                                <input
+                                    type="checkbox"
+                                    className={s.toggleInput}
+                                    checked={showLastSeen}
+                                    onChange={e => setShowLastSeen(e.target.checked)}
+                                />
+                                <span className={s.toggleTrack}></span>
+                            </label>
+                        </div>
 
                         <div className={s.field}>
                             <label className={s.label}>Bio</label>

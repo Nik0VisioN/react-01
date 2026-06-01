@@ -37,9 +37,10 @@ const Profile = () => {
     if (!profileId) return;
 
     const loadProfile = async () => {
-      const { data, error } = await supabase
+      // public profile data
+      const { data: pub, error } = await supabase
         .from('profiles')
-        .select('id, name, status, city, country, photo_url, cover_url, bio, age, created_at, last_seen, location_visible')
+        .select('id, name, status, city, country, photo_url, cover_url, created_at, location_visible, show_last_seen')
         .eq('id', profileId)
         .single();   // .single() returns single object instead of array, so we don't need data[0] later
 
@@ -48,7 +49,14 @@ const Profile = () => {
         return;
       }
 
-      setLastSeen(data.last_seen);
+      // private profile data (bio, age) - we load it separately because it's not needed for profile info and we want to avoid loading it if profile is private and we are not friends
+      const { data: priv } = await supabase
+        .from('profiles_private')
+        .select('bio, age, last_seen')
+        .eq('id', profileId)
+        .maybeSingle();
+
+      setLastSeen(priv?.last_seen ?? null);
 
       // count: subscribers, followers, posts - we can do in one query with .select('*', { count: 'exact', head: true }) and then check count in response
       const [{ count: followers }, { count: following }, { count: posts }] = await Promise.all([
@@ -58,24 +66,25 @@ const Profile = () => {
       ]);
 
       // date registration -> "Joined Jan 2020"
-      const joined = data.created_at
-        ? new Date(data.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+      const joined = pub.created_at
+        ? new Date(pub.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
         : '';
 
       //move Supabase-datesTable -> userInfo, which is used in ProfileInfo component
       dispatch(setUserInfoActionCreator({
-        name: data.name,
-        title: data.status || '',
-        photo: data.photo_url,
-        cover: data.cover_url,
-        bio: data.bio,
-        age: data.age,
+        name: pub.name,
+        title: pub.status || '',
+        photo: pub.photo_url,
+        cover: pub.cover_url,
+        bio: priv?.bio,
+        age: priv?.age,
         joined,
         followers: followers ?? 0,
         following: following ?? 0,
         posts: posts ?? 0,
-        location: [data.city, data.country].filter(Boolean).join(', '),
-        locationVisible: data.location_visible,
+        location: [pub.city, pub.country].filter(Boolean).join(', '),
+        locationVisible: pub.location_visible,
+        showLastSeen: pub.show_last_seen,
       }));
     };
 
@@ -86,7 +95,7 @@ const Profile = () => {
   useEffect(() => {
     if (!profileId || isOnline) return;
     let active = true;
-    supabase.from('profiles').select('last_seen').eq('id', profileId).single()
+    supabase.from('profiles_private').select('last_seen').eq('id', profileId).maybeSingle()
       .then(({ data }) => { if (active && data) setLastSeen(data.last_seen); });
     return () => { active = false; };
   }, [isOnline, profileId]);

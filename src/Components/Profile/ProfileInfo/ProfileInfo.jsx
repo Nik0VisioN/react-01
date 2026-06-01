@@ -24,13 +24,19 @@ const FRIEND_LABELS = {
 };
 
 const ProfileInfo = (props) => {
-  const { name, location, locationVisible, photo, cover, bio, age, joined, followers, following, posts } = props.userInfo;
+  const { name, location, locationVisible, showLastSeen, photo, cover, bio, age, joined, followers, following, posts } = props.userInfo;
   const { isOwnProfile, isOnline, lastSeen, isFriends, friendState, friendBusy, onFriendClick } = props;
 
   const canSee = isOwnProfile || isFriends;
 
+  const onlineForDisplay = isOwnProfile ? true : isOnline;
+
   const showLocation = location && (locationVisible !== false || isOwnProfile);
   const locationHidden = isOwnProfile && locationVisible === false;
+
+  // show "Last seen" for owmer and anyone (if owner show it)
+  const lastSeenVisible = isOwnProfile || showLastSeen !== false;
+  const lastSeenHidden = isOwnProfile && showLastSeen === false;
 
   // tik 1 time every 30 seconds to update "Last seen" text for offline profiles, because it can become outdated while user is on profile page (e.g. "Last seen: 5m ago" -> "Last seen: 6m ago"), so we need to update it periodically. For online profiles we show "Online", so no need to update it.
   const [, setTick] = useState(0);
@@ -39,9 +45,9 @@ const ProfileInfo = (props) => {
     return () => clearInterval(t);
   }, []);
 
-  const statusText = isOnline
+  const statusText = onlineForDisplay
     ? 'Online'
-    : (lastSeen ? `Last seen ${timeAgo(new Date(lastSeen))}` : 'Offline');
+    : (lastSeen && lastSeenVisible ? `Last seen ${timeAgo(new Date(lastSeen))}` : 'Offline');
 
   const friendIcon = {
     none: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M19 8v6M22 11h-6" /></svg>,
@@ -85,16 +91,19 @@ const ProfileInfo = (props) => {
               ? <img src={photo} alt={name} />
               : (name ? name[0].toUpperCase() : '?')}
           </div>
-          <span className={`${s.presence} ${isOnline ? s.online : s.offline}`}></span>
+          {canSee && <span className={`${s.presence} ${onlineForDisplay ? s.online : s.offline}`}></span>}
         </div>
 
         <div className={s.ident}>
           <div className={s.nameRow}>
             <h2 className={s.name}>{name || 'Unnamed'}</h2>
             {canSee && (
-              <span className={`${s.badge} ${isOnline ? '' : s.off}`}>
+              <span className={`${s.badge} ${onlineForDisplay ? '' : s.off}`}>
                 <span className={s.dot}></span>
                 {statusText}
+                {!onlineForDisplay && lastSeenHidden && (
+                  <span style={{ opacity: 0.55, fontSize: '11px', marginLeft: '4px' }}>· hidden</span>
+                )}
               </span>
             )}
           </div>

@@ -19,12 +19,17 @@ export const PresenceProvider = ({ children }) => {
 
     // heartbeat: keep last_seen fresh while the app is open
     const ping = () =>
-      supabase.from('profiles')
+      supabase.from('profiles_private')
         .update({ last_seen: new Date().toISOString() })
         .eq('id', userId);
 
     ping();
     const interval = setInterval(ping, 45000); // update every 45 seconds, because Supabase considers user offline if last_seen is older than 1.5 minutes, so 45 seconds is a good value to keep it fresh without too many requests
+
+    // fix time, when user closes tab or browser and onVisibilityChange doesn't fire (which should update last_seen and remove user from online list), so we track pagehide event in addition to visibilitychange, which works better for this case
+    const onVisibility = () => ping();
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('pagehide', onVisibility);
 
     // presence key = user id, so presenceState() keys = all online ids
     const channel = supabase.channel('online-users', {
@@ -43,6 +48,8 @@ export const PresenceProvider = ({ children }) => {
 
     return () => {
       clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('pagehide', onVisibility);
       ping();
       supabase.removeChannel(channel);
     };
