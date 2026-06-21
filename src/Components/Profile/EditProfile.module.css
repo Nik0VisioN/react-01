@@ -133,6 +133,53 @@
     box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.12);
 }
 
+/* age: hide native number spinners so it matches the other inputs */
+.input[type="number"]::-webkit-outer-spin-button,
+.input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* username field: @ prefix + availability hints */
+.usernameWrap {
+    position: relative;
+}
+
+.usernameAt {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--e-text-faint);
+    font-family: 'Space Mono', monospace;
+    font-size: 15px;
+    pointer-events: none;
+}
+
+.usernameWrap .input {
+    padding-left: 32px;
+}
+
+.hintMuted {
+    font-size: 12px;
+    color: var(--e-text-muted);
+}
+
+.hintOk {
+    font-size: 12px;
+    color: #6BCB77;
+}
+
+.hintBad {
+    font-size: 12px;
+    color: #FF6B6B;
+}
+
 .textarea {
     width: 100%;
     box-sizing: border-box;
@@ -313,13 +360,14 @@
     }
 }
 
+/* fixed: media query was nesting .locationRow inside .card (not valid in CRA build) */
 @media (max-width: 480px) {
     .card {
         padding: 26px 20px;
+    }
 
-        .locationRow {
-            flex-direction: column;
-        }
+    .locationRow {
+        flex-direction: column;
     }
 }
 
@@ -427,6 +475,7 @@
     margin-top: 12px;
     cursor: pointer;
     user-select: none;
+    position: relative;
 }
 
 .toggleText {

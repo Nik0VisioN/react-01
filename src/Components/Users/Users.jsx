@@ -39,10 +39,11 @@ const Users = (props) => {
                     const state = friendState(u);
                     const online = onlineIds.has(u.id);
                     const loc = [u.location?.city, u.location?.country].filter(Boolean).join(', ');
+                    const to = `/profile/${u.username || u.id}`; // link by username, fall back to id
 
                     return (
                         <div key={u.id} className={s.user}>
-                            <Link to={`/profile/${u.id}`} className={s.avatarLink}>
+                            <Link to={to} className={s.avatarLink}>
                                 <div className={s.avatar}>
                                     {u.photoUrl
                                         ? <img src={u.photoUrl} alt={u.name} />
@@ -52,7 +53,7 @@ const Users = (props) => {
                             </Link>
 
                             <div className={s.info}>
-                                <Link to={`/profile/${u.id}`} className={s.nameLink}>
+                                <Link to={to} className={s.nameLink}>
                                     <span className={s.name}>{u.name || 'Unnamed'}</span>
                                 </Link>
                                 <span className={s.sub}>{loc || u.status || ''}</span>

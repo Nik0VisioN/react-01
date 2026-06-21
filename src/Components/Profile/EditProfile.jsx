@@ -10,12 +10,14 @@ const EditProfile = () => {
     const { session, loading: authLoading } = useAuth();
     const userId = session?.user?.id;
 
+    const [username, setUsername] = useState('');
+    const [usernameStatus, setUsernameStatus] = useState(''); // '', 'checking', 'available', 'taken', 'invalid'
     const [name, setName] = useState('');
     const [age, setAge] = useState('');
     const [bio, setBio] = useState('');
     const [city, setCity] = useState('');
     const [country, setCountry] = useState('');
-    const [locationVisible, setLocationVisible] = useState(false);
+    const [locationVisible, setLocationVisible] = useState(true);
     const [showLastSeen, setShowLastSeen] = useState(true);
     const [avatarUrl, setAvatarUrl] = useState('');
     const [coverUrl, setCoverUrl] = useState('');
@@ -28,8 +30,7 @@ const EditProfile = () => {
     const [error, setError] = useState('');
     const [saved, setSaved] = useState(false);
 
-
-    // download user's uploads to show them in EditProfile (optional, can be used for "My uploads" section or just to delete old uploads)
+    // list user's uploaded files (for the gallery / cleanup)
     const loadUploads = useCallback(async () => {
         if (!userId) return;
         const { data, error } = await supabase.storage.from(BUCKET).list(userId, {
@@ -45,19 +46,19 @@ const EditProfile = () => {
         setUploads(files);
     }, [userId]);
 
-
     useEffect(() => {
         if (!userId) return;
         const load = async () => {
             const { data, error } = await supabase
                 .from('profiles')
-                .select('name, photo_url, cover_url, city, country, location_visible, show_last_seen') // without bio/age !!!
+                .select('name, username, photo_url, cover_url, city, country, location_visible, show_last_seen')
                 .eq('id', userId)
                 .single();
 
             if (error) { setError(error.message); }
             else if (data) {
                 setName(data.name ?? '');
+                setUsername(data.username ?? '');
                 setCity(data.city ?? '');
                 setCountry(data.country ?? '');
                 setLocationVisible(data.location_visible ?? true);
@@ -66,7 +67,7 @@ const EditProfile = () => {
                 setCoverUrl(data.cover_url ?? '');
             }
 
-            // private data (bio, age) - we load it separately because it's not needed for profile info and we want to avoid loading it if profile is private and we are not friends
+            // private fields (bio, age) live in profiles_private
             const { data: priv } = await supabase
                 .from('profiles_private')
                 .select('bio, age')
@@ -81,7 +82,30 @@ const EditProfile = () => {
         load();
     }, [userId, loadUploads]);
 
-    // load image to user's folder <userId>/ and return public URL
+    // live username availability check (debounced)
+    useEffect(() => {
+        if (!userId) return;
+        const value = username.trim().toLowerCase();
+
+        if (!value) { setUsernameStatus(''); return; }
+        if (!/^[a-z0-9_]{3,20}$/.test(value)) { setUsernameStatus('invalid'); return; }
+
+        setUsernameStatus('checking');
+        const t = setTimeout(async () => {
+            // exclude my own row so my current username reads as available
+            const { data } = await supabase
+                .from('profiles')
+                .select('id')
+                .eq('username', value)
+                .neq('id', userId)
+                .maybeSingle();
+            setUsernameStatus(data ? 'taken' : 'available');
+        }, 400);
+
+        return () => clearTimeout(t);
+    }, [username, userId]);
+
+    // upload an image to <userId>/ and return its public URL
     const uploadImage = async (file, kind) => {
         const ext = file.name.split('.').pop();
         const path = `${userId}/${kind}-${Date.now()}.${ext}`;
@@ -123,7 +147,6 @@ const EditProfile = () => {
         }
     };
 
-
     const applyAsAvatar = (url) => { setAvatarUrl(url); setSaved(false); };
     const applyAsCover = (url) => { setCoverUrl(url); setSaved(false); };
 
@@ -134,7 +157,7 @@ const EditProfile = () => {
         const { error } = await supabase.storage.from(BUCKET).remove([path]);
         if (error) { setError('Delete failed: ' + error.message); return; }
 
-        // if deleted file was in use as avatar or cover, clear it
+        // if the deleted file was the current avatar/cover, clear it
         if (url === avatarUrl) setAvatarUrl('');
         if (url === coverUrl) setCoverUrl('');
         loadUploads();
@@ -143,6 +166,13 @@ const EditProfile = () => {
     const handleSave = async () => {
         setError(''); setSaved(false);
         if (!name.trim()) { setError('Name cannot be empty'); return; }
+
+        const uname = username.trim().toLowerCase();
+        if (!/^[a-z0-9_]{3,20}$/.test(uname)) {
+            setError('Username must be 3–20 chars: a–z, 0–9, _');
+            return;
+        }
+        if (usernameStatus === 'taken') { setError('Username is already taken'); return; }
 
         let ageValue = null;
         if (age !== '' && age !== null) {
@@ -160,6 +190,7 @@ const EditProfile = () => {
             .from('profiles')
             .update({
                 name: name.trim(),
+                username: uname,
                 city: city.trim() || null,
                 country: country.trim() || null,
                 location_visible: locationVisible,
@@ -176,8 +207,15 @@ const EditProfile = () => {
 
         setSaving(false);
 
-        if (pubErr || privErr) setError((pubErr || privErr).message);
-        else setSaved(true);
+        if (pubErr) {
+            // 23505 = unique violation (taken), 23514 = check violation (bad format)
+            if (pubErr.code === '23505') { setError('Username is already taken'); return; }
+            if (pubErr.code === '23514') { setError('Username format is invalid'); return; }
+            setError(pubErr.message);
+            return;
+        }
+        if (privErr) { setError(privErr.message); return; }
+        setSaved(true);
     };
 
     return (
@@ -228,7 +266,7 @@ const EditProfile = () => {
                             </div>
                         </div>
 
-                        {/* gallery downloaded files */}
+                        {/* uploaded files gallery */}
                         {uploads.length > 0 && (
                             <div className={s.field}>
                                 <label className={s.label}>Your uploads</label>
@@ -263,9 +301,37 @@ const EditProfile = () => {
                             <input className={s.input} value={name} onChange={e => setName(e.target.value)} placeholder="Your name" />
                         </div>
 
+                        {/* Username */}
+                        <div className={s.field}>
+                            <label className={s.label}>Username</label>
+                            <div className={s.usernameWrap}>
+                                <span className={s.usernameAt}>@</span>
+                                <input
+                                    className={s.input}
+                                    value={username}
+                                    onChange={e => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                                    placeholder="your_handle"
+                                    maxLength={20}
+                                />
+                            </div>
+                            {usernameStatus === 'checking' && <span className={s.hintMuted}>Checking…</span>}
+                            {usernameStatus === 'available' && <span className={s.hintOk}>✓ Available</span>}
+                            {usernameStatus === 'taken' && <span className={s.hintBad}>✕ Already taken</span>}
+                            {usernameStatus === 'invalid' && <span className={s.hintBad}>3–20 chars: a–z, 0–9, _</span>}
+                        </div>
+
                         <div className={s.field}>
                             <label className={s.label}>Age</label>
-                            <input className={s.input} type="number" min="13" max="120" value={age} onChange={e => setAge(e.target.value)} placeholder="Your age" />
+                            <input
+                                className={s.input}
+                                type="number"
+                                min="13"
+                                max="120"
+                                value={age}
+                                onChange={e => setAge(e.target.value)}
+                                onWheel={(e) => e.currentTarget.blur()}   // prevent mouse wheel from changing the value
+                                placeholder="Your age"
+                            />
                         </div>
 
                         {/* Location */}

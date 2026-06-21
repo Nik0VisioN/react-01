@@ -31,7 +31,7 @@ const App = (props) => {
         <Routes>
           <Route path='/' element={<Navigate to='/welcome' replace />} />
           {/* Public for all */}
-          <Route path="/profile/:userId" element={<Profile />} />
+          <Route path="/profile/:username" element={<Profile />} />
 
           {/* Private! Only for authenticated users */}
           <Route path="/profile/edit" element={

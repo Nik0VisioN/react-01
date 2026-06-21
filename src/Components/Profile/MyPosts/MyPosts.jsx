@@ -10,7 +10,8 @@ const MyPosts = (props) => {
       id={post.id}
       message={post.message}
       authorName={post.authorName}
-      authorPhoto={post.authorPhoto}      // >>> добавил
+      authorPhoto={post.authorPhoto}
+      authorUsername={post.authorUsername}
       userId={post.userId}
       currentUserId={props.currentUserId}
       profileOwnerId={props.profileOwnerId}

@@ -53,10 +53,11 @@ const UsersContainer = () => {
                 .map(p => ({
                     id: p.id,
                     name: p.name,
+                    username: p.username,
                     status: p.status,
                     photoUrl: p.photo_url,
-                    followed: followingSet.has(p.id),     // iFollow
-                    theyFollow: followerSet.has(p.id),    // we are friends if both follow each other
+                    followed: followingSet.has(p.id),
+                    theyFollow: followerSet.has(p.id),
                     location: { city: p.city, country: p.country },
                 }));
 

@@ -46,26 +46,26 @@ const Navbar = () => {
       {isOpen && <div className={s.overlay} onClick={closeMenu}></div>}
 
       <nav className={`${s.nav} ${isOpen ? s.open : ''}`}>
-  <div className={s.theme_wrapper}>
-    <ThemeSwitch />
-  </div>
+        <div className={s.theme_wrapper}>
+          <ThemeSwitch />
+        </div>
 
-  <div className={s.links}>
-    {NAV.map(item => (
-      <NavLink
-        key={item.to}
-        to={item.to}
-        onClick={closeMenu}
-        className={({ isActive }) =>
-          isActive ? `${s.text_nav} ${s.active}` : s.text_nav
-        }
-      >
-        <span className={s.icon}>{item.icon}</span>
-        {item.label}
-      </NavLink>
-    ))}
-  </div>
-</nav>
+        <div className={s.links}>
+          {NAV.map(item => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              onClick={closeMenu}
+              className={({ isActive }) =>
+                isActive ? `${s.text_nav} ${s.active}` : s.text_nav
+              }
+            >
+              <span className={s.icon}>{item.icon}</span>
+              {item.label}
+            </NavLink>
+          ))}
+        </div>
+      </nav>
     </>
   );
 };

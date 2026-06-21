@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import logo_channel_main from './Together_logo.png';
 import s from './Header.module.css';
 import { supabase } from '../../supabaseClient';
@@ -15,11 +15,12 @@ const Header = () => {
   const [q, setQ] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [requests, setRequests] = useState([]); // incoming friend requests (who follow me, but I don't follow back), to show in notifications
 
   const menuRef = useRef(null);
   const notifRef = useRef(null);
 
-  // find profile on login and when session changes (e.g. after page reload)
+  // profile data for header (name and avatar), to show in header and pass to menu, so
   useEffect(() => {
     if (!userId) { setProfile(null); return; }
     let active = true;
@@ -27,6 +28,43 @@ const Header = () => {
       .then(({ data }) => { if (active && data) setProfile(data); });
     return () => { active = false; };
   }, [userId]);
+
+  // incoming friend requests for notifications, to show in notifications dropdown, so we load them on every open of notifications and also after accepting/declining request, to keep it fresh
+  const loadRequests = useCallback(async () => {
+    if (!userId) { setRequests([]); return; }
+    const { data: followers } = await supabase
+      .from('follows').select('follower_id').eq('following_id', userId);
+    const { data: following } = await supabase
+      .from('follows').select('following_id').eq('follower_id', userId);
+
+    const iFollow = new Set((following || []).map(r => r.following_id));
+    const incomingIds = (followers || [])
+      .map(r => r.follower_id)
+      .filter(id => !iFollow.has(id));
+
+    if (incomingIds.length === 0) { setRequests([]); return; }
+
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, name, photo_url, username').in('id', incomingIds);
+    setRequests(profiles || []);
+  }, [userId]);
+
+  useEffect(() => { loadRequests(); }, [loadRequests]);
+
+  const acceptReq = async (id) => {
+    const { error } = await supabase.from('follows')
+      .insert({ follower_id: userId, following_id: id });
+    if (error) { console.error('Accept error:', error); return; }
+    setRequests(prev => prev.filter(u => u.id !== id));
+  };
+
+  const declineReq = async (id) => {
+    const { error } = await supabase.from('follows').delete()
+      .eq('follower_id', id).eq('following_id', userId);
+    if (error) { console.error('Decline error:', error); return; }
+    setRequests(prev => prev.filter(u => u.id !== id));
+  };
 
   // close popups on outside click
   useEffect(() => {
@@ -44,7 +82,7 @@ const Header = () => {
   };
 
   const onSearchKey = (e) => {
-    if (e.key === 'Enter' && q.trim()) navigate('/users'); // TODO: настоящий поиск — задача №3
+    if (e.key === 'Enter' && q.trim()) navigate('/users');
   };
 
   const handle = (profile?.name || session?.user?.email?.split('@')[0] || 'me').toLowerCase();
@@ -89,14 +127,40 @@ const Header = () => {
               className={s.iconBtn}
               aria-label="Notifications"
               title="Notifications"
-              onClick={() => { setNotifOpen(v => !v); setMenuOpen(false); }}
+              onClick={() => { const v = !notifOpen; setNotifOpen(v); setMenuOpen(false); if (v) loadRequests(); }}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>
             </button>
 
+            {requests.length > 0 && <span className={s.notifBadge}>{requests.length}</span>}
+
             <div className={`${s.dd} ${s.ddNotif} ${notifOpen ? s.ddOpen : ''}`}>
               <div className={s.ddHead}><b>Notifications</b></div>
-              <div className={s.empty}>No notifications yet.</div>
+
+              {requests.length === 0 ? (
+                <div className={s.empty}>No notifications yet.</div>
+              ) : (
+                <div className={s.reqList}>
+                  {requests.map(u => (
+                    <div className={s.reqRow} key={u.id}>
+                      <Link to={`/profile/${u.username}`} className={s.reqUser} onClick={() => setNotifOpen(false)}>
+                        <div className={s.reqAv}>
+                          {u.photo_url ? <img src={u.photo_url} alt={u.name} /> : (u.name ? u.name[0].toUpperCase() : '?')}
+                        </div>
+                        <span className={s.reqName}>{u.name || 'Unnamed'}</span>
+                      </Link>
+                      <div className={s.reqActions}>
+                        <button className={s.reqAccept} onClick={() => acceptReq(u.id)} title="Accept" aria-label="Accept">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
+                        </button>
+                        <button className={s.reqDecline} onClick={() => declineReq(u.id)} title="Decline" aria-label="Decline">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 

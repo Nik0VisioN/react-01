@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import s from './Post.module.css';
 
 const Post = (props) => {
@@ -8,6 +9,7 @@ const Post = (props) => {
     authorName,
     authorPhoto,
     userId,
+    authorUsername,
     currentUserId,
     profileOwnerId,
     liked,
@@ -20,16 +22,20 @@ const Post = (props) => {
     currentUserId &&
     (currentUserId === userId || currentUserId === profileOwnerId);
 
+  // link by username, fall back to id if username isn't wired yet
+  const authorTo = `/profile/${authorUsername || userId}`;
 
   return (
     <div className={s.post}>
       <div className={s.header}>
-        <div className={s.avatar}>
-          {authorPhoto                                       // photo_url by author, if we have it, show it, otherwise show first letter of name or '?' if no name
-            ? <img src={authorPhoto} alt={authorName} />
-            : (authorName ? authorName[0].toUpperCase() : '?')}
-        </div>
-        <span className={s.nickname}>{authorName || 'Unknown'}</span>
+        <Link to={authorTo} className={s.authorLink}>
+          <div className={s.avatar}>
+            {authorPhoto
+              ? <img src={authorPhoto} alt={authorName} />
+              : (authorName ? authorName[0].toUpperCase() : '?')}
+          </div>
+          <span className={s.nickname}>{authorName || 'Unknown'}</span>
+        </Link>
 
         {canDelete && (
           <button
@@ -60,6 +66,5 @@ const Post = (props) => {
     </div>
   );
 };
-
 
 export default Post;

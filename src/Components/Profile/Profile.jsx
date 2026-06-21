@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, Navigate } from 'react-router-dom';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import content_area from './Profile.module.css';
 import ProfileInfo from './ProfileInfo/ProfileInfo';
@@ -9,89 +9,137 @@ import { useAuth } from '../../AuthContext';
 import { usePresence } from '../Auth/PresenceContext';
 import { setUserInfoActionCreator } from '../../Redux/profile_reducer';
 
+// matches a UUID so we can keep old /profile/<uuid> links working
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const Profile = () => {
-  const { userId: urlUserId } = useParams();
+  const { username: urlParam } = useParams();
   const { session, loading } = useAuth();
   const currentUserId = session?.user?.id;
-
-  // if URL is empty, show current user's profile
-  const profileId = urlUserId || currentUserId;
-
-  // check if this is own profile (show edit button only on own profile)
-  const isOwnProfile = !!currentUserId && profileId === currentUserId;
-
-
-  const { onlineIds } = usePresence();
-  const isOnline = onlineIds.has(profileId);
-
-  const [lastSeen, setLastSeen] = useState(null);
-
-  const [iFollow, setIFollow] = useState(false);     // i follow him
-  const [theyFollow, setTheyFollow] = useState(false); // he follows me
-  const [relLoading, setRelLoading] = useState(true);
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  // resolve the URL param (username or legacy uuid) into a profile id
+  const [profileId, setProfileId] = useState(null);
+  const [resolving, setResolving] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
   useEffect(() => {
-    if (!profileId) return;
+    let active = true;
+    const resolve = async () => {
+      setResolving(true);
+      setNotFound(false);
 
-    const loadProfile = async () => {
-      // public profile data
-      const { data: pub, error } = await supabase
-        .from('profiles')
-        .select('id, name, status, city, country, photo_url, cover_url, created_at, location_visible, show_last_seen')
-        .eq('id', profileId)
-        .single();   // .single() returns single object instead of array, so we don't need data[0] later
-
-      if (error) {
-        console.error('Profile load error:', error);
+      // own profile at /profile → redirect to /profile/<my username>
+      if (!urlParam) {
+        if (!currentUserId) { if (active) { setProfileId(null); setResolving(false); } return; }
+        const { data } = await supabase
+          .from('profiles').select('username').eq('id', currentUserId).maybeSingle();
+        if (!active) return;
+        if (data?.username) { navigate(`/profile/${data.username}`, { replace: true }); return; }
+        setProfileId(currentUserId); // fallback if username is somehow missing
+        setResolving(false);
         return;
       }
 
-      // private profile data (bio, age) - we load it separately because it's not needed for profile info and we want to avoid loading it if profile is private and we are not friends
-      const { data: priv } = await supabase
-        .from('profiles_private')
-        .select('bio, age, last_seen')
-        .eq('id', profileId)
-        .maybeSingle();
+      // legacy uuid link → use it directly (keeps old links alive)
+      if (UUID_RE.test(urlParam)) {
+        if (active) { setProfileId(urlParam); setResolving(false); }
+        return;
+      }
 
-      setLastSeen(priv?.last_seen ?? null);
-
-      // count: subscribers, followers, posts - we can do in one query with .select('*', { count: 'exact', head: true }) and then check count in response
-      const [{ count: followers }, { count: following }, { count: posts }] = await Promise.all([
-        supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', profileId),
-        supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', profileId),
-        supabase.from('posts').select('*', { count: 'exact', head: true }).eq('profile_id', profileId),
-      ]);
-
-      // date registration -> "Joined Jan 2020"
-      const joined = pub.created_at
-        ? new Date(pub.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-        : '';
-
-      //move Supabase-datesTable -> userInfo, which is used in ProfileInfo component
-      dispatch(setUserInfoActionCreator({
-        name: pub.name,
-        title: pub.status || '',
-        photo: pub.photo_url,
-        cover: pub.cover_url,
-        bio: priv?.bio,
-        age: priv?.age,
-        joined,
-        followers: followers ?? 0,
-        following: following ?? 0,
-        posts: posts ?? 0,
-        location: [pub.city, pub.country].filter(Boolean).join(', '),
-        locationVisible: pub.location_visible,
-        showLastSeen: pub.show_last_seen,
-      }));
+      // username → id
+      const { data } = await supabase
+        .from('profiles').select('id').eq('username', urlParam.toLowerCase()).maybeSingle();
+      if (!active) return;
+      if (data) setProfileId(data.id);
+      else { setProfileId(null); setNotFound(true); }
+      setResolving(false);
     };
+    resolve();
+    return () => { active = false; };
+  }, [urlParam, currentUserId, navigate]);
 
-    loadProfile();
+  const isOwnProfile = !!currentUserId && profileId === currentUserId;
+
+  const { onlineIds } = usePresence();
+  const isOnline = profileId ? onlineIds.has(profileId) : false;
+
+  const [lastSeen, setLastSeen] = useState(null);
+  const [iFollow, setIFollow] = useState(false);      // i follow them
+  const [theyFollow, setTheyFollow] = useState(false); // they follow me
+  const [relLoading, setRelLoading] = useState(true);
+
+  // load profile data + counts (reused by initial load and realtime)
+  const loadProfile = useCallback(async () => {
+    if (!profileId) return;
+
+    const { data: pub, error } = await supabase
+      .from('profiles')
+      .select('id, name, status, city, country, photo_url, cover_url, created_at, location_visible, show_last_seen')
+      .eq('id', profileId)
+      .single();
+
+    if (error) { console.error('Profile load error:', error); return; }
+
+    // private fields: only for owner or mutual friend, otherwise null
+    const { data: priv } = await supabase
+      .from('profiles_private')
+      .select('bio, age, last_seen')
+      .eq('id', profileId)
+      .maybeSingle();
+
+    setLastSeen(priv?.last_seen ?? null);
+
+    const [{ count: followers }, { count: following }, { count: posts }] = await Promise.all([
+      supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', profileId),
+      supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', profileId),
+      supabase.from('posts').select('*', { count: 'exact', head: true }).eq('profile_id', profileId),
+    ]);
+
+    const joined = pub.created_at
+      ? new Date(pub.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+      : '';
+
+    dispatch(setUserInfoActionCreator({
+      name: pub.name,
+      title: pub.status || '',
+      photo: pub.photo_url,
+      cover: pub.cover_url,
+      bio: priv?.bio,
+      age: priv?.age,
+      joined,
+      followers: followers ?? 0,
+      following: following ?? 0,
+      posts: posts ?? 0,
+      location: [pub.city, pub.country].filter(Boolean).join(', '),
+      locationVisible: pub.location_visible,
+      showLastSeen: pub.show_last_seen,
+    }));
   }, [profileId, dispatch]);
 
-  // if profile is offline, load last_seen from database to show "Last seen X ago". For online profiles we show "Online", so no need to load last_seen.
+  // load relationship for the friend button and content gate
+  const loadRel = useCallback(async () => {
+    if (!profileId || !currentUserId || isOwnProfile) {
+      setIFollow(false); setTheyFollow(false); setRelLoading(false);
+      return;
+    }
+    setRelLoading(true);
+    const [{ data: mine }, { data: theirs }] = await Promise.all([
+      supabase.from('follows').select('follower_id')
+        .eq('follower_id', currentUserId).eq('following_id', profileId).maybeSingle(),
+      supabase.from('follows').select('follower_id')
+        .eq('follower_id', profileId).eq('following_id', currentUserId).maybeSingle(),
+    ]);
+    setIFollow(!!mine);
+    setTheyFollow(!!theirs);
+    setRelLoading(false);
+  }, [profileId, currentUserId, isOwnProfile]);
+
+  useEffect(() => { loadProfile(); }, [loadProfile]);
+  useEffect(() => { loadRel(); }, [loadRel]);
+
+  // if offline, pull last_seen to show "Last seen X ago"
   useEffect(() => {
     if (!profileId || isOnline) return;
     let active = true;
@@ -100,29 +148,25 @@ const Profile = () => {
     return () => { active = false; };
   }, [isOnline, profileId]);
 
-  // load relationship between current user and profile user (i follow him, he follows me) to show correct state of "Add friend" button and decide whether to show profile content (if profile is private and we are not friends, we hide content and show "This profile is private" message instead)
+  // realtime: keep friend status and counts fresh
   useEffect(() => {
-    let active = true;
-    const loadRel = async () => {
-      if (!profileId || !currentUserId || isOwnProfile) {
-        setIFollow(false); setTheyFollow(false); setRelLoading(false);
-        return;
-      }
-      setRelLoading(true);
-      const [{ data: mine }, { data: theirs }] = await Promise.all([
-        supabase.from('follows').select('follower_id')
-          .eq('follower_id', currentUserId).eq('following_id', profileId).maybeSingle(),
-        supabase.from('follows').select('follower_id')
-          .eq('follower_id', profileId).eq('following_id', currentUserId).maybeSingle(),
-      ]);
-      if (!active) return;
-      setIFollow(!!mine);
-      setTheyFollow(!!theirs);
-      setRelLoading(false);
-    };
-    loadRel();
-    return () => { active = false; };
-  }, [profileId, currentUserId, isOwnProfile]);
+    if (!profileId) return;
+    const channel = supabase
+      .channel(`profile-${profileId}-${currentUserId || 'anon'}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'follows' }, (payload) => {
+        const r = payload.new || payload.old || {};
+        const involvesPair = currentUserId && (
+          (r.follower_id === currentUserId && r.following_id === profileId) ||
+          (r.follower_id === profileId && r.following_id === currentUserId)
+        );
+        const involvesProfile = r.follower_id === profileId || r.following_id === profileId;
+        if (involvesPair) loadRel();
+        if (involvesProfile) loadProfile();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts', filter: `profile_id=eq.${profileId}` }, () => loadProfile())
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [profileId, currentUserId, loadProfile, loadRel]);
 
   const addFriend = async () => {
     if (!currentUserId) return;
@@ -142,7 +186,7 @@ const Profile = () => {
 
   const onFriendClick = () => (iFollow ? removeFriend() : addFriend());
 
-  // state of friendship: 'none' (no one follows), 'friends' (mutual follow), 'requested' (i follow, they don't), 'incoming' (they follow, i don't)
+  // friendship state: 'none' / 'friends' (mutual) / 'requested' (i follow, they don't) / 'incoming' (they follow, i don't)
   let friendState = 'none';
   if (iFollow && theyFollow) friendState = 'friends';
   else if (iFollow) friendState = 'requested';
@@ -151,7 +195,16 @@ const Profile = () => {
   const isFriends = iFollow && theyFollow;
   const canSeeContent = isOwnProfile || isFriends;
 
-  if (loading) return <div>Loading...</div>;
+  if (loading || resolving) return <div>Loading...</div>;
+  if (!urlParam && !currentUserId) return <Navigate to="/login" replace />;
+  if (notFound) {
+    return (
+      <div className={content_area.locked}>
+        <span className={content_area.lockedTitle}>User not found</span>
+        <span>This profile doesn’t exist.</span>
+      </div>
+    );
+  }
   if (!profileId) return <Navigate to="/users" replace />;
 
   return (
